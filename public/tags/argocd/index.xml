@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>argocd on 丸子有记</title>
+    <link>https://wnote.com/tags/argocd/</link>
+    <description>Recent content in argocd on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Wed, 29 Jul 2020 15:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/argocd/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ArgoCD配合Jenkins Pipeline自动化部署应用</title>
+      <link>https://wnote.com/post/cicd-argocd-jenkins-pipeline/</link>
+      <pubDate>Wed, 29 Jul 2020 15:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/cicd-argocd-jenkins-pipeline/</guid>
+      <description>创建helm仓库 首先，创建基础Helm模版仓库： 1 helm create template . 对于实际的部署中，需要根据自己的业务定制自己的helm模版，我这里直接使用我们内部</description>
+    </item>
+    
+    <item>
+      <title>argocd部署deployment出现: no space left on device</title>
+      <link>https://wnote.com/post/kubernetes-error-no-space-left-on-device/</link>
+      <pubDate>Mon, 18 May 2020 10:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-error-no-space-left-on-device/</guid>
+      <description>故障现象 上午通过argocd部署几个业务应用，部署了2个以后，第三方死活部署不成功，相同的配置，知识集群不一样，怎么会出现这样的问题呢？ 于是</description>
+    </item>
+    
+    <item>
+      <title>ArgoCD添加多集群</title>
+      <link>https://wnote.com/post/cicd-argocd-add-clusters/</link>
+      <pubDate>Tue, 05 May 2020 15:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/cicd-argocd-add-clusters/</guid>
+      <description>生成argocd管理用户token 登陆dashboard，settings&amp;ndash;&amp;gt;Accounts&amp;ndash;&amp;gt;adm</description>
+    </item>
+    
+    <item>
+      <title>ArgoCD安部部署</title>
+      <link>https://wnote.com/post/cicd-argocd-install-in-k8s/</link>
+      <pubDate>Fri, 01 May 2020 15:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/cicd-argocd-install-in-k8s/</guid>
+      <description>安装部署 ArgoCD的部署非常简单，安装官方的部署方法(HA模式： 1 2 kubectl create namespace argocd kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v1.5.2/manifests/ha/install.yaml 可以按照需求调整部署文件，待pod顺利启动后 1 2 3</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>traefik on 丸子有记</title>
+    <link>https://wnote.com/tags/traefik/</link>
+    <description>Recent content in traefik on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Tue, 17 Dec 2019 10:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/traefik/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>kubernetes集群部署traefik2.1</title>
+      <link>https://wnote.com/post/kubernetes-traefik-v2.1-deploy/</link>
+      <pubDate>Tue, 17 Dec 2019 10:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-traefik-v2.1-deploy/</guid>
+      <description>架构&amp;amp;概念 Traefik2.x版本相比1.7.x架构有很大变化，正如上边这张架构图，最主要的功能是支持了TCP协议、增加了Route</description>
+    </item>
+    
+  </channel>
+</rss>

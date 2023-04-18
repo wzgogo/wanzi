@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>terraform on 丸子有记</title>
+    <link>https://wnote.com/tags/terraform/</link>
+    <description>Recent content in terraform on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Fri, 26 Feb 2021 17:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/terraform/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>terraform自动化创建ECS</title>
+      <link>https://wnote.com/post/devops-terraform-create-aliyun-ecs/</link>
+      <pubDate>Fri, 26 Feb 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/devops-terraform-create-aliyun-ecs/</guid>
+      <description>快速创建一台阿里云ECS主机 指定terraform版本 这里我们指定了阿里云provider版本信息，并设置了terraform的版本要求 1 2</description>
+    </item>
+    
+    <item>
+      <title>terraform安装与命令详解</title>
+      <link>https://wnote.com/post/devops-terraform-command-detail/</link>
+      <pubDate>Thu, 25 Feb 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/devops-terraform-command-detail/</guid>
+      <description>安装Terraform Mac系统安装 1 2 brew tap hashicorp/tap brew install hashicorp/tap/terraform Linux系统安装 ubuntu安装 1 2 3 curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add - sudo apt-add-repository &amp;#34;deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs)main&amp;#34; sudo apt-get update &amp;amp;&amp;amp; sudo apt-get install terraform c</description>
+    </item>
+    
+    <item>
+      <title>自动化编排工具Terraform介绍</title>
+      <link>https://wnote.com/post/devops-terraform-about/</link>
+      <pubDate>Wed, 24 Feb 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/devops-terraform-about/</guid>
+      <description>Terraform是什么？： Terraform是由HashiCorp公司在2014年左右推出的开源资源编排工具, 目前几乎所有的主流云服务商都</description>
+    </item>
+    
+  </channel>
+</rss>

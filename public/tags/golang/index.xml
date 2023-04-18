@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>golang on 丸子有记</title>
+    <link>https://wnote.com/tags/golang/</link>
+    <description>Recent content in golang on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Fri, 17 Mar 2023 18:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/golang/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go学习笔记 - Go基础知识复习</title>
+      <link>https://wnote.com/post/golang-note-datatype-struct/</link>
+      <pubDate>Fri, 17 Mar 2023 18:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/golang-note-datatype-struct/</guid>
+      <description>一、基础知识 1、基本数据类型 值类型： 1 2 3 4 5 6 7 8 9 10 11 12 bool（长度1Byte或1个字节）byte(1个字节，uint8别名)rune</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>dockerfile on 丸子有记</title>
+    <link>https://wnote.com/tags/dockerfile/</link>
+    <description>Recent content in dockerfile on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Mon, 02 Jul 2018 16:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/dockerfile/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Dockerfile多阶段构建</title>
+      <link>https://wnote.com/post/docker-dockerfile-multi-stage/</link>
+      <pubDate>Mon, 02 Jul 2018 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/docker-dockerfile-multi-stage/</guid>
+      <description>Docker多阶段构建理解: 构建镜像需要有一个基础镜像,后续操作就会基于该基础镜像构建 docker镜像文件里有层级概念,每执行一次RUN指令</description>
+    </item>
+    
+    <item>
+      <title>Dockerfile语法详情</title>
+      <link>https://wnote.com/post/docker-dockerfile-details/</link>
+      <pubDate>Thu, 21 Jun 2018 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/docker-dockerfile-details/</guid>
+      <description>FROM 指定构建镜像使用的基础镜像,FROM必须是Dockerfile中非注释行的第一个指令,如果本地没有指定的镜像，则会自动从Docker的公共</description>
+    </item>
+    
+  </channel>
+</rss>

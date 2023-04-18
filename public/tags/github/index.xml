@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>github on 丸子有记</title>
+    <link>https://wnote.com/tags/github/</link>
+    <description>Recent content in github on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Tue, 10 Mar 2020 16:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/github/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hugo&#43;Github搭建个人博客</title>
+      <link>https://wnote.com/post/tools-hugo-github-blog/</link>
+      <pubDate>Tue, 10 Mar 2020 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/tools-hugo-github-blog/</guid>
+      <description>Hugo介绍 之前博客一直使用hexo搭建,随着用golang越来越多，一直想把博客也迁移到hugo,hugo就不用多说了go语言编写的静态网</description>
+    </item>
+    
+  </channel>
+</rss>

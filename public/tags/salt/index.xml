@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>salt on 丸子有记</title>
+    <link>https://wnote.com/tags/salt/</link>
+    <description>Recent content in salt on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Sat, 10 Feb 2018 16:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/salt/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>saltstack之salt命令大全</title>
+      <link>https://wnote.com/post/devops-saltstack-commands/</link>
+      <pubDate>Sat, 10 Feb 2018 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/devops-saltstack-commands/</guid>
+      <description>常用命令 1 2 3 4 5 6 7 8 9 salt -N &amp;#39;ceph&amp;#39; test.ping #测试连通性 salt -E &amp;#39;^server10*&amp;#39; test.ping #正则匹配连通性 salt -S 192.168.150.101 test.ping #根据agent ip地址匹配执行 salt -S 192.168.150.0/24 test.ping #根据agent ip地</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>mac on 丸子有记</title>
+    <link>https://wnote.com/tags/mac/</link>
+    <description>Recent content in mac on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Sat, 10 Nov 2018 10:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/mac/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Mac系统配置炫酷终端(oh my zsh)</title>
+      <link>https://wnote.com/post/tools-zsh-cool-install/</link>
+      <pubDate>Sat, 10 Nov 2018 10:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/tools-zsh-cool-install/</guid>
+      <description>brew工具 官网:https://brew.sh 安装brew 1 /usr/bin/ruby -e &amp;#34;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&amp;#34; 修改brew源为国内源 1 2 3 4 5 6 7 git -C &amp;#34;$(brew --repo)&amp;#34; remote set-url origin https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git git -C &amp;#34;$(brew --repo homebrew/core)&amp;#34; remote set-url origin</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>nginx on 丸子有记</title>
+    <link>https://wnote.com/tags/nginx/</link>
+    <description>Recent content in nginx on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Mon, 08 Nov 2021 17:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/nginx/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>解决k8s下nginx文件上传限制和504网关超时</title>
+      <link>https://wnote.com/post/kubernetes-nginx-ingress-504/</link>
+      <pubDate>Mon, 08 Nov 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-nginx-ingress-504/</guid>
+      <description>最近业务使用k8s集群经常有两个问题需要解决，这里记录一下： 前端页面上传文件1M限制 前端页面发送POST请求到后端，出现504超时 第一个问题</description>
+    </item>
+    
+  </channel>
+</rss>

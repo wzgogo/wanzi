@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>git on 丸子有记</title>
+    <link>https://wnote.com/tags/git/</link>
+    <description>Recent content in git on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Sat, 28 Jul 2018 17:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/git/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Git日常命令总结</title>
+      <link>https://wnote.com/post/linux-git-commands-base/</link>
+      <pubDate>Sat, 28 Jul 2018 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/linux-git-commands-base/</guid>
+      <description>Git全局设置： 1 2 git config --global user.name &amp;#34;wanzi&amp;#34; git config --global user.email &amp;#34;iwz2099@163.com&amp;#34; Git提交代码 1 2 3 4 5 6 7 8 9 10 11 12 13 git clone git@github.com:iwz2099/test.git cd test touch README.md git add README.md git commit -m &amp;#34;add README&amp;#34; git push -u origin master #上面命令将本地的m</description>
+    </item>
+    
+  </channel>
+</rss>

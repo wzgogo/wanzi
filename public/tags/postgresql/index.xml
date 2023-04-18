@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>postgresql on 丸子有记</title>
+    <link>https://wnote.com/tags/postgresql/</link>
+    <description>Recent content in postgresql on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Wed, 08 Sep 2021 17:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/postgresql/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>如何快速搭建一套Greenplum集群</title>
+      <link>https://wnote.com/post/greenplum-docker-compose-installtion/</link>
+      <pubDate>Wed, 08 Sep 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/greenplum-docker-compose-installtion/</guid>
+      <description>最近内部项目支持大数据项目，需要模拟客户场景配置Greenplum(老版本4.2.2.4)，因此这里记录下greenplum集群搭建过程,其</description>
+    </item>
+    
+  </channel>
+</rss>

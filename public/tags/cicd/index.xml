@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>cicd on 丸子有记</title>
+    <link>https://wnote.com/tags/cicd/</link>
+    <description>Recent content in cicd on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Mon, 18 May 2020 10:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/cicd/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>argocd部署deployment出现: no space left on device</title>
+      <link>https://wnote.com/post/kubernetes-error-no-space-left-on-device/</link>
+      <pubDate>Mon, 18 May 2020 10:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-error-no-space-left-on-device/</guid>
+      <description>故障现象 上午通过argocd部署几个业务应用，部署了2个以后，第三方死活部署不成功，相同的配置，知识集群不一样，怎么会出现这样的问题呢？ 于是</description>
+    </item>
+    
+  </channel>
+</rss>

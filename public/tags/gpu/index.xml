@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>gpu on 丸子有记</title>
+    <link>https://wnote.com/tags/gpu/</link>
+    <description>Recent content in gpu on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Tue, 31 Aug 2021 14:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/gpu/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>阿里云共享GPU方案测试</title>
+      <link>https://wnote.com/post/kubernetes-gpushare-aliyun/</link>
+      <pubDate>Tue, 31 Aug 2021 14:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-gpushare-aliyun/</guid>
+      <description>一、k8s部署GPU共享插件 部署之前需要确保k8s节点上已安装nvidia-driver和nvidia-docker，同时已将docker默</description>
+    </item>
+    
+  </channel>
+</rss>

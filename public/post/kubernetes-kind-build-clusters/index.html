@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html
+  lang="zh-cn"
+  itemscope
+  itemtype="http://schema.org/WebPage"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>
+          kind构建轻量级kubernetes集群 - 丸子有记
+        </title>
+    
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="wanzi" /><meta name="description" content="kind构建轻量级kubernetes集群" />
+
+  <meta name="keywords" content="丸子有记, 运维, devops, sre, 运维架构, 运维开发, go语言, python" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="https://wnote.com/post/kubernetes-kind-build-clusters/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.d8d87b982993a745e5e7b6a6cbf257be8c3e82aab5e485f0908ad7e6c3501ab2.css" integrity="sha256-2Nh7mCmTp0Xl57amy/JXvow&#43;gqq15IXwkIrX5sNQGrI=" media="screen" crossorigin="anonymous">
+
+
+
+<style>
+  .wallpaper {
+    background-image: url('/static/img/wallpaper.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+  }
+</style>
+
+
+
+
+<meta property="og:title" content="kind构建轻量级kubernetes集群" />
+<meta property="og:description" content="kind构建轻量级kubernetes集群" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://wnote.com/post/kubernetes-kind-build-clusters/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2023-04-13T18:22:42+08:00" />
+<meta property="article:modified_time" content="2023-04-13T18:22:42+08:00" />
+
+<meta itemprop="name" content="kind构建轻量级kubernetes集群">
+<meta itemprop="description" content="kind构建轻量级kubernetes集群"><meta itemprop="datePublished" content="2023-04-13T18:22:42+08:00" />
+<meta itemprop="dateModified" content="2023-04-13T18:22:42+08:00" />
+<meta itemprop="wordCount" content="2589">
+<meta itemprop="keywords" content="kind,k8s,docker," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="kind构建轻量级kubernetes集群"/>
+<meta name="twitter:description" content="kind构建轻量级kubernetes集群"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+  </head>
+  <body>
+    <div id="back-to-top"></div>
+
+    <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">丸子有记</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/">主页</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/post/">归档</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/tags/">标签</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/categories/">分类</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/notes/">笔记</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/about/">关于</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+    
+      
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+    
+
+    
+      
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = '5463c477db2c64c03';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+    
+
+    
+
+
+    <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      丸子有记
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/">主页</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/post/">归档</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/tags/">标签</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/categories/">分类</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/notes/">笔记</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/about/">关于</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+    </header>
+
+    <div id="mobile-panel">
+      <main id="main" class="main bg-llight wallpaper">
+        <div class="content-wrapper">
+    <div id="content" class="content">
+      <article class="post">
+        
+        <header class="post-header">
+          <h1 class="post-title">kind构建轻量级kubernetes集群</h1>
+          
+
+          <div class="post-meta">
+  <div class="post-meta-author">
+    by
+      <a href="/about">
+        <span class="post-meta-author-name">
+          wanzi
+        </span>
+      </a>
+    
+  </div>
+
+  <div class="post-meta-time">
+    <time datetime="2023-04-13">
+      2023-04-13
+    </time>
+  </div>
+
+  
+
+
+  <div class="post-meta__right">
+    <span class="post-meta-more">
+        约 2589 字 -
+        预计阅读 6 分钟
+      </span>
+
+    <div class="post-meta-category">
+        <a href="https://wnote.com/categories/kubernetes/"> kubernetes </a>
+          
+      </div>
+
+
+    
+    
+
+
+    
+    
+  </div>
+</div>
+
+        </header>
+
+        
+        <div class="post-content">
+          <p>最近在复习Golang，写了一个web应用，本地跑通以后想在k8s集群测试一番，苦于机器配置原因，
+搭建一套完整的k8s集群还是有一些力不从心，记得之前有朋友说过docker里也可以跑k8s，于是这就折腾了一番。</p>
+<p>今天的主角是kind,那么kind是什么呢？kind可以用来干什么呢？</p>
+<h2 id="一kind介绍">一、kind介绍</h2>
+<p>kind是Kubernetes In Docker缩写，一个使用docker容器节点来运行本地的kubernetes集群工具，kind主要用于测试kubernetes本身，
+适用于本地开发或者CI。</p>
+<p>对于kind目前几乎支持kubernetes官方所有版本，对于运行时目前仅支持docker，未来会逐步支持CRI里常用运行时，
+相信未来一些日子，会慢慢支持conterned。</p>
+<p>其实，kind管理集群过程，是在使用kubeadm、kustomize等开源组件来进行工作。</p>
+<p>废话不多说，下面我们就快速安装使用kind。</p>
+<h2 id="二kind安装">二、kind安装</h2>
+<p>由于我系统是mac osx所以，我这里直接使用brew安装：</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell"><span style="color:#60a0b0;font-style:italic"># brew install kind</span>
+<span style="color:#666">==</span>&gt; Downloading https://mirrors.ustc.edu.cn/homebrew-bottles/kind-0.17.0.arm64_monterey.bottle.tar.gz
+Already downloaded: /Users/wanzi/Library/Caches/Homebrew/downloads/bcd419997297730492f5cebc36be86fb51f21061a6ddb2e066e1e4d8ad33ddf3--kind-0.17.0.arm64_monterey.bottle.tar.gz
+<span style="color:#666">==</span>&gt; Pouring kind-0.17.0.arm64_monterey.bottle.tar.gz
+<span style="color:#666">==</span>&gt; Caveats
+zsh completions have been installed to:
+  /opt/homebrew/share/zsh/site-functions
+<span style="color:#666">==</span>&gt; Summary
+🍺  /opt/homebrew/Cellar/kind/0.17.0: <span style="color:#40a070">8</span> files, 8.7MB
+<span style="color:#666">==</span>&gt; Running <span style="color:#4070a0">`</span>brew cleanup kind<span style="color:#4070a0">`</span>...
+Disable this behaviour by setting HOMEBREW_NO_INSTALL_CLEANUP.
+Hide these hints with HOMEBREW_NO_ENV_HINTS <span style="color:#666">(</span>see <span style="color:#4070a0">`</span>man brew<span style="color:#4070a0">`</span><span style="color:#666">)</span>.
+<span style="color:#60a0b0;font-style:italic"># kind version</span>
+kind v0.17.0 go1.19.2 darwin/arm64
+</code></pre></td></tr></table>
+</div>
+</div><p>对于linux安装：</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell">curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.17.0/kind-linux-amd64
+chmod +x ./kind
+sudo mv ./kind /usr/local/bin/kind
+</code></pre></td></tr></table>
+</div>
+</div><p>当然，如果你是windows，也可以使用Chocolatey安装；或者使用二进制方式，这些官方都支持。</p>
+<h2 id="三创建第一个集群">三、创建第一个集群</h2>
+<p>在操作之前，docker和kubectl是我们需要提前准备，具体安装我这里就先忽略。</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell"><span style="color:#60a0b0;font-style:italic"># kind help</span>
+kind creates and manages <span style="color:#007020">local</span> Kubernetes clusters using Docker container <span style="color:#4070a0">&#39;nodes&#39;</span>
+
+Usage:
+  kind <span style="color:#666">[</span>command<span style="color:#666">]</span>
+
+Available Commands:
+  build       Build one of <span style="color:#666">[</span>node-image<span style="color:#666">]</span>
+  completion  Output shell completion code <span style="color:#007020;font-weight:bold">for</span> the specified shell <span style="color:#666">(</span>bash, zsh or fish<span style="color:#666">)</span>
+  create      Creates one of <span style="color:#666">[</span>cluster<span style="color:#666">]</span>
+  delete      Deletes one of <span style="color:#666">[</span>cluster<span style="color:#666">]</span>
+  <span style="color:#007020">export</span>      Exports one of <span style="color:#666">[</span>kubeconfig, logs<span style="color:#666">]</span>
+  get         Gets one of <span style="color:#666">[</span>clusters, nodes, kubeconfig<span style="color:#666">]</span>
+  <span style="color:#007020">help</span>        Help about any <span style="color:#007020">command</span>
+  load        Loads images into nodes
+  version     Prints the kind CLI version
+
+Flags:
+  -h, --help              <span style="color:#007020">help</span> <span style="color:#007020;font-weight:bold">for</span> kind
+      --loglevel string   DEPRECATED: see -v instead
+  -q, --quiet             silence all stderr output
+  -v, --verbosity int32   info log verbosity, higher value produces more output
+
+Use <span style="color:#4070a0">&#34;kind [command] --help&#34;</span> <span style="color:#007020;font-weight:bold">for</span> more information about a command.
+</code></pre></td></tr></table>
+</div>
+</div><p>对于kind help命令，我们知道kind支持build,create,delete,get,load等操作，
+对于子命令可以通过-h获取更多讯息。</p>
+<p>kind创建一个集群，
+在创建集群之前我们需要确保~/.kube目录存在，因为创建过程中，kind会将集群API地址、证书等信息写入kubeconfig。</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell"><span style="color:#60a0b0;font-style:italic"># kind create cluster</span>
+Creating cluster <span style="color:#4070a0">&#34;kind&#34;</span> ...
+ ✓ Ensuring node image <span style="color:#666">(</span>kindest/node:v1.25.3<span style="color:#666">)</span> 🖼
+ ✓ Preparing nodes 📦
+ ✓ Writing configuration 📜
+ ✓ Starting control-plane 🕹️
+ ✓ Installing CNI 🔌
+ ✓ Installing StorageClass 💾
+Set kubectl context to <span style="color:#4070a0">&#34;kind-kind&#34;</span>
+You can now use your cluster with:
+
+kubectl cluster-info --context kind-kind
+
+Have a nice day! 👋
+
+<span style="color:#60a0b0;font-style:italic"># kubectl get node</span>
+NAME                 STATUS   ROLES           AGE     VERSION
+kind-control-plane   Ready    control-plane   9m21s   v1.25.3
+<span style="color:#60a0b0;font-style:italic"># kubectl get pods -A</span>
+NAMESPACE            NAME                                         READY   STATUS    RESTARTS   AGE
+kube-system          coredns-565d847f94-kp6l7                     1/1     Running   <span style="color:#40a070">0</span>          9m15s
+kube-system          coredns-565d847f94-ml28b                     1/1     Running   <span style="color:#40a070">0</span>          9m15s
+kube-system          etcd-kind-control-plane                      1/1     Running   <span style="color:#40a070">0</span>          9m32s
+kube-system          kindnet-hfsc8                                1/1     Running   <span style="color:#40a070">0</span>          9m15s
+kube-system          kube-apiserver-kind-control-plane            1/1     Running   <span style="color:#40a070">0</span>          9m31s
+kube-system          kube-controller-manager-kind-control-plane   1/1     Running   <span style="color:#40a070">0</span>          9m33s
+kube-system          kube-proxy-m9zp5                             1/1     Running   <span style="color:#40a070">0</span>          9m15s
+kube-system          kube-scheduler-kind-control-plane            1/1     Running   <span style="color:#40a070">0</span>          9m33s
+local-path-storage   local-path-provisioner-684f458cdd-d7f29      1/1     Running   <span style="color:#40a070">0</span>          9m15s
+</code></pre></td></tr></table>
+</div>
+</div><p>这样我们第一个集群就用kind创建完成。</p>
+<h2 id="四集群操作">四、集群操作：</h2>
+<h3 id="1kind自定义集群名称">1、kind自定义集群名称：</h3>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell"><span style="color:#60a0b0;font-style:italic"># kind create cluster --name ci-cluster</span>
+Creating cluster <span style="color:#4070a0">&#34;ci-cluster&#34;</span> ...
+ ✓ Ensuring node image <span style="color:#666">(</span>kindest/node:v1.25.3<span style="color:#666">)</span> 🖼
+ ✓ Preparing nodes 📦
+ ✓ Writing configuration 📜
+ ✓ Starting control-plane 🕹️
+ ✓ Installing CNI 🔌
+ ✓ Installing StorageClass 💾
+Set kubectl context to <span style="color:#4070a0">&#34;kind-ci-cluster&#34;</span>
+You can now use your cluster with:
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="2切换集群">2、切换集群：</h3>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5">5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6">6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7">7</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell"><span style="color:#60a0b0;font-style:italic"># kubectl cluster-info --context kind-ci-cluster</span>
+Kubernetes control plane is running at https://127.0.0.1:56527
+CoreDNS is running at https://127.0.0.1:56527/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use <span style="color:#4070a0">&#39;kubectl cluster-info dump&#39;</span>.
+
+Have a nice day! 👋
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="3查看kind所有集群">3、查看kind所有集群</h3>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell"><span style="color:#60a0b0;font-style:italic"># kind get clusters</span>
+ci-cluster
+kind
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="4导入镜像">4、导入镜像</h3>
+<p>默认kind node节点是无法读取宿主机镜像，需要手动导入到kind</p>
+<p>node节点：</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell"><span style="color:#60a0b0;font-style:italic"># kind load docker-image --name ci-cluster --nodes  ci-cluster-control-plane  traefik:v2.9.5</span>
+<span style="color:#60a0b0;font-style:italic"># docker exec -it ci-cluster-control-plane bash</span>
+root@ci-cluster-control-plane:/# crictl images  |grep traefik
+docker.io/library/traefik                  v2.9.5               a1252ce6bfaaa       132MB
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="五集群配置">五、集群配置：</h2>
+<h3 id="1多节点集群">1、多节点集群</h3>
+<p>对于前面，我们介绍了kind创建集群，默认集群只有一个节点，下面介绍如何创建多个节点。</p>
+<p>创建config.yaml内容如下：</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5">5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6">6</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell">kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+- role: worker
+- role: worker
+</code></pre></td></tr></table>
+</div>
+</div><p>重新创建集群</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell"><span style="color:#60a0b0;font-style:italic"># kind create cluster --config config.yaml</span>
+<span style="color:#60a0b0;font-style:italic"># kubectl get node</span>
+NAME                 STATUS   ROLES           AGE    VERSION
+kind-control-plane   Ready    control-plane   110s   v1.25.3
+kind-worker          Ready    &lt;none&gt;          74s    v1.25.3
+kind-worker2         Ready    &lt;none&gt;          88s    v1.25.3
+
+kind本身也可以支持多master高可用部署，这里我主要测试就不简单介绍。
+
+<span style="color:#60a0b0;font-style:italic">### 2、自定义kubernetes集群版本</span>
+
+<span style="color:#4070a0">```</span>Yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+- role: worker
+  images: kindest/node:v1.24.7@sha256:577c630ce8e509131eab1aea12c022190978dd2f745aac5eb1fe65c0807eb315
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="3挂载宿主机目录到节点容器持久化存储">3、挂载宿主机目录到节点容器持久化存储</h3>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Yaml" data-lang="Yaml"><span style="color:#062873;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>Cluster<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>kind.x-k8s.io/v1alpha4<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">nodes</span>:<span style="color:#bbb">
+</span><span style="color:#bbb"></span>- <span style="color:#062873;font-weight:bold">role</span>:<span style="color:#bbb"> </span>control-plane<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">extraMounts</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- <span style="color:#062873;font-weight:bold">hostPath</span>:<span style="color:#bbb"> </span>/Users/wanzi/tools/kind/files<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">containerPath</span>:<span style="color:#bbb"> </span>/files<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- <span style="color:#062873;font-weight:bold">hostPath</span>:<span style="color:#bbb"> </span>/Users/wanzi/tools/kind/other-files/<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">containerPath</span>:<span style="color:#bbb"> </span>/other-files<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">readOnly</span>:<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">true</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">selinuxRelabel</span>:<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">false</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">propagation</span>:<span style="color:#bbb"> </span>None<span style="color:#bbb">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="4端口映射">4、端口映射</h3>
+<p>宿主机端口80映射到nodePort 30950，kind节点containerPort需要和Service的nodePort端口相同</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="34"><a style="outline: none; text-decoration:none; color:inherit" href="#34">34</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="35"><a style="outline: none; text-decoration:none; color:inherit" href="#35">35</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Yaml" data-lang="Yaml"><span style="color:#062873;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>Cluster<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>kind.x-k8s.io/v1alpha4<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">nodes</span>:<span style="color:#bbb">
+</span><span style="color:#bbb"></span>- <span style="color:#062873;font-weight:bold">role</span>:<span style="color:#bbb"> </span>control-plane<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">extraPortMappings</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- <span style="color:#062873;font-weight:bold">containerPort</span>:<span style="color:#bbb"> </span><span style="color:#40a070">30950</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">hostPort</span>:<span style="color:#bbb"> </span><span style="color:#40a070">80</span><span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>Pod<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>v1<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">metadata</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>foo<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">labels</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">app</span>:<span style="color:#bbb"> </span>foo<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">spec</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">containers</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- <span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>foo<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">image</span>:<span style="color:#bbb"> </span>hashicorp/http-echo:0.2.3<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">args</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>- <span style="color:#4070a0">&#34;-text=foo&#34;</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">ports</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>- <span style="color:#062873;font-weight:bold">containerPort</span>:<span style="color:#bbb"> </span><span style="color:#40a070">5678</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#0e84b5;font-weight:bold">---</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>v1<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>Service<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">metadata</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>foo<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">spec</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">type</span>:<span style="color:#bbb"> </span>NodePort<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">ports</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- <span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>http<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">nodePort</span>:<span style="color:#bbb"> </span><span style="color:#40a070">30950</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">port</span>:<span style="color:#bbb"> </span><span style="color:#40a070">5678</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">selector</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">app</span>:<span style="color:#bbb"> </span>foo<span style="color:#bbb">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="5自定义label">5、自定义label</h3>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Yaml" data-lang="Yaml"><span style="color:#062873;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>Cluster<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>kind.x-k8s.io/v1alpha4<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">nodes</span>:<span style="color:#bbb">
+</span><span style="color:#bbb"></span>- <span style="color:#062873;font-weight:bold">role</span>:<span style="color:#bbb"> </span>control-plane<span style="color:#bbb">
+</span><span style="color:#bbb"></span>- <span style="color:#062873;font-weight:bold">role</span>:<span style="color:#bbb"> </span>worker<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">extraPortMappings</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- <span style="color:#062873;font-weight:bold">containerPort</span>:<span style="color:#bbb"> </span><span style="color:#40a070">30950</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">hostPort</span>:<span style="color:#bbb"> </span><span style="color:#40a070">80</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">labels</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">tier</span>:<span style="color:#bbb"> </span>frontend<span style="color:#bbb">
+</span><span style="color:#bbb"></span>- <span style="color:#062873;font-weight:bold">role</span>:<span style="color:#bbb"> </span>worker<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">labels</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">tier</span>:<span style="color:#bbb"> </span>backend<span style="color:#bbb">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="6kubeadm自定义配置">6、kubeadm自定义配置：</h3>
+<p>kind用kubeadm配置集群，他会在第一个控制平面节点上运行kubeadm init,我们可以对它进行自定义：</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Yaml" data-lang="Yaml"><span style="color:#062873;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>Cluster<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>kind.x-k8s.io/v1alpha4<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">nodes</span>:<span style="color:#bbb">
+</span><span style="color:#bbb"></span>- <span style="color:#062873;font-weight:bold">role</span>:<span style="color:#bbb"> </span>control-plane<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">kubeadmConfigPatches</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- |<span style="color:#4070a0;font-style:italic">
+</span><span style="color:#4070a0;font-style:italic">    kind: InitConfiguration
+</span><span style="color:#4070a0;font-style:italic">    nodeRegistration:
+</span><span style="color:#4070a0;font-style:italic">      kubeletExtraArgs:
+</span><span style="color:#4070a0;font-style:italic">        node-labels: &#34;my-label=true&#34;</span><span style="color:#bbb">    
+</span></code></pre></td></tr></table>
+</div>
+</div><p>如果你想做更多的定制，有四种配置类型可供选择kubeadm init</p>
+<ul>
+<li>InitConfiguration</li>
+<li>ClusterConfiguration</li>
+<li>KubeProxyConfiguration</li>
+<li>KubeletConfiguration</li>
+</ul>
+<p>例如，我们可以使用 kubeadm ClusterConfiguration ( spec ) 覆盖 apiserver 标志:</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Yaml" data-lang="Yaml"><span style="color:#062873;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>Cluster<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>kind.x-k8s.io/v1alpha4<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">nodes</span>:<span style="color:#bbb">
+</span><span style="color:#bbb"></span>- <span style="color:#062873;font-weight:bold">role</span>:<span style="color:#bbb"> </span>control-plane<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">kubeadmConfigPatches</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- |<span style="color:#4070a0;font-style:italic">
+</span><span style="color:#4070a0;font-style:italic">    kind: ClusterConfiguration
+</span><span style="color:#4070a0;font-style:italic">    apiServer:
+</span><span style="color:#4070a0;font-style:italic">        extraArgs:
+</span><span style="color:#4070a0;font-style:italic">          enable-admission-plugins: NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook</span><span style="color:#bbb">    
+</span></code></pre></td></tr></table>
+</div>
+</div><p>在 KIND管理HA的集群中配置的每个附加节点上，KIND运行kubeadm join可以使用JoinConfiguration自定义配置：</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Yaml" data-lang="Yaml"><span style="color:#062873;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>Cluster<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>kind.x-k8s.io/v1alpha4<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">nodes</span>:<span style="color:#bbb">
+</span><span style="color:#bbb"></span>- <span style="color:#062873;font-weight:bold">role</span>:<span style="color:#bbb"> </span>control-plane<span style="color:#bbb">
+</span><span style="color:#bbb"></span>- <span style="color:#062873;font-weight:bold">role</span>:<span style="color:#bbb"> </span>worker<span style="color:#bbb">
+</span><span style="color:#bbb"></span>- <span style="color:#062873;font-weight:bold">role</span>:<span style="color:#bbb"> </span>worker<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">kubeadmConfigPatches</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- |<span style="color:#4070a0;font-style:italic">
+</span><span style="color:#4070a0;font-style:italic">    kind: JoinConfiguration
+</span><span style="color:#4070a0;font-style:italic">    nodeRegistration:
+</span><span style="color:#4070a0;font-style:italic">      kubeletExtraArgs:
+</span><span style="color:#4070a0;font-style:italic">        node-labels: &#34;my-label2=true&#34;</span><span style="color:#bbb">    
+</span><span style="color:#bbb"></span>- <span style="color:#062873;font-weight:bold">role</span>:<span style="color:#bbb"> </span>control-plane<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">kubeadmConfigPatches</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- |<span style="color:#4070a0;font-style:italic">
+</span><span style="color:#4070a0;font-style:italic">    kind: JoinConfiguration
+</span><span style="color:#4070a0;font-style:italic">    nodeRegistration:
+</span><span style="color:#4070a0;font-style:italic">      kubeletExtraArgs:
+</span><span style="color:#4070a0;font-style:italic">        node-labels: &#34;my-label3=true&#34;</span><span style="color:#bbb">    
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="7配置ingress">7、配置ingress</h3>
+<p>允许本地主机通过端口80/443向Ingress控制器发出请求，并配置控制器特定label</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Yaml" data-lang="Yaml"><span style="color:#062873;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>Cluster<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>kind.x-k8s.io/v1alpha4<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">nodes</span>:<span style="color:#bbb">
+</span><span style="color:#bbb"></span>- <span style="color:#062873;font-weight:bold">role</span>:<span style="color:#bbb"> </span>control-plane<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">kubeadmConfigPatches</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- |<span style="color:#4070a0;font-style:italic">
+</span><span style="color:#4070a0;font-style:italic">    kind: InitConfiguration
+</span><span style="color:#4070a0;font-style:italic">    nodeRegistration:
+</span><span style="color:#4070a0;font-style:italic">      kubeletExtraArgs:
+</span><span style="color:#4070a0;font-style:italic">        node-labels: &#34;ingress-ready=true&#34;</span><span style="color:#bbb">    
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">extraPortMappings</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- <span style="color:#062873;font-weight:bold">containerPort</span>:<span style="color:#bbb"> </span><span style="color:#40a070">80</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">hostPort</span>:<span style="color:#bbb"> </span><span style="color:#40a070">80</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">protocol</span>:<span style="color:#bbb"> </span>TCP<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- <span style="color:#062873;font-weight:bold">containerPort</span>:<span style="color:#bbb"> </span><span style="color:#40a070">443</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">hostPort</span>:<span style="color:#bbb"> </span><span style="color:#40a070">443</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">protocol</span>:<span style="color:#bbb"> </span>TCP<span style="color:#bbb">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell">kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="六完整集群配置">六、完整集群配置</h2>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="34"><a style="outline: none; text-decoration:none; color:inherit" href="#34">34</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="35"><a style="outline: none; text-decoration:none; color:inherit" href="#35">35</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="36"><a style="outline: none; text-decoration:none; color:inherit" href="#36">36</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="37"><a style="outline: none; text-decoration:none; color:inherit" href="#37">37</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="38"><a style="outline: none; text-decoration:none; color:inherit" href="#38">38</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="39"><a style="outline: none; text-decoration:none; color:inherit" href="#39">39</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="40"><a style="outline: none; text-decoration:none; color:inherit" href="#40">40</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="41"><a style="outline: none; text-decoration:none; color:inherit" href="#41">41</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Yaml" data-lang="Yaml"><span style="color:#062873;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>Cluster<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>kind.x-k8s.io/v1alpha4<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">nodes</span>:<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#60a0b0;font-style:italic">#增加多结点集群,并自定义node的集群版本</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span>- <span style="color:#062873;font-weight:bold">role</span>:<span style="color:#bbb"> </span>control-plane<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">images</span>:<span style="color:#bbb"> </span>kindest/node:v1.24.7@sha256:577c630ce8e509131eab1aea12c022190978dd2f745aac5eb1fe65c0807eb315<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">kubeadmConfigPatches</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- |<span style="color:#4070a0;font-style:italic">
+</span><span style="color:#4070a0;font-style:italic">    kind: InitConfiguration
+</span><span style="color:#4070a0;font-style:italic">    nodeRegistration:
+</span><span style="color:#4070a0;font-style:italic">      kubeletExtraArgs:
+</span><span style="color:#4070a0;font-style:italic">        node-labels: &#34;ingress-ready=true&#34;</span><span style="color:#bbb">    
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">extraPortMappings</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- <span style="color:#062873;font-weight:bold">containerPort</span>:<span style="color:#bbb"> </span><span style="color:#40a070">80</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">hostPort</span>:<span style="color:#bbb"> </span><span style="color:#40a070">80</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">protocol</span>:<span style="color:#bbb"> </span>TCP<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- <span style="color:#062873;font-weight:bold">containerPort</span>:<span style="color:#bbb"> </span><span style="color:#40a070">443</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">hostPort</span>:<span style="color:#bbb"> </span><span style="color:#40a070">443</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">protocol</span>:<span style="color:#bbb"> </span>TCP<span style="color:#bbb">
+</span><span style="color:#bbb"></span>- <span style="color:#062873;font-weight:bold">role</span>:<span style="color:#bbb"> </span>worker<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">images</span>:<span style="color:#bbb"> </span>kindest/node:v1.24.7@sha256:577c630ce8e509131eab1aea12c022190978dd2f745aac5eb1fe65c0807eb315<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">labels</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">app</span>:<span style="color:#bbb"> </span>front<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">extraMounts</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- <span style="color:#062873;font-weight:bold">hostPath</span>:<span style="color:#bbb"> </span>/Users/wanzi/tools/kind/wwwroot<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">containerPath</span>:<span style="color:#bbb"> </span>/wwwroot<span style="color:#bbb">
+</span><span style="color:#bbb"></span>- <span style="color:#062873;font-weight:bold">role</span>:<span style="color:#bbb"> </span>worker<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">images</span>:<span style="color:#bbb"> </span>kindest/node:v1.24.7@sha256:577c630ce8e509131eab1aea12c022190978dd2f745aac5eb1fe65c0807eb315<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">labels</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">app</span>:<span style="color:#bbb"> </span>backend<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">extraMounts</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- <span style="color:#062873;font-weight:bold">hostPath</span>:<span style="color:#bbb"> </span>/Users/wanzi/tools/kind/wwwroot<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">containerPath</span>:<span style="color:#bbb"> </span>/wwwroot<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">networking</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#60a0b0;font-style:italic">#自定义配置APIServer和网络</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">apiServerAddress</span>:<span style="color:#bbb"> </span><span style="color:#4070a0">&#34;127.0.0.1&#34;</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">apiServerPort</span>:<span style="color:#bbb"> </span><span style="color:#40a070">6443</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">podSubnet</span>:<span style="color:#bbb"> </span><span style="color:#4070a0">&#34;10.244.0.0/16&#34;</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">serviceSubnet</span>:<span style="color:#bbb"> </span><span style="color:#4070a0">&#34;10.96.0.0/12&#34;</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#60a0b0;font-style:italic">#disableDefaultCNI: true #默认CNI插件为kindnetd，也可以禁用使用其他插件比如calico</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">kubeProxyMode</span>:<span style="color:#bbb"> </span><span style="color:#4070a0">&#34;ipvs&#34;</span><span style="color:#bbb"> </span><span style="color:#60a0b0;font-style:italic">#设置kubeproxy模式为lvs,如果要禁用可以设置none</span><span style="color:#bbb">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>至此，使用kind来快速构建集群算是告一段落，平常就可以用它跑测试，验证功能了。</p>
+<p>参考文档：
+<a href="https://kind.sigs.k8s.io">https://kind.sigs.k8s.io</a>
+<a href="https://github.com/kubernetes-sigs/kind">https://github.com/kubernetes-sigs/kind</a></p>
+
+        </div>
+
+        
+        
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">wanzi</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+      2023-04-13
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+
+        
+        
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+    
+  </div>
+</div>
+
+
+        <footer class="post-footer">
+          <div class="post-tags">
+              <a href="https://wnote.com/tags/kind/">kind</a>
+                <a href="https://wnote.com/tags/k8s/">k8s</a>
+                <a href="https://wnote.com/tags/docker/">docker</a>
+                
+            </div>
+
+
+          
+          <nav class="post-nav">
+            
+            
+              <a class="next" href="/post/cicd-jenkins-agent-docker-kubectl-helm/">
+                <span class="next-text nav-default">自定义Jenkins Agent集成docker和kubectl工具</span>
+                <span class="prev-text nav-mobile">下一篇</span>
+                
+                <i class="iconfont">
+                  <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+                </i>
+              </a>
+          </nav>
+        </footer>
+      </article>
+
+      
+      
+        
+      
+
+
+      
+      
+
+  
+
+  
+  
+    <div class="post">
+  <script
+    src="https://giscus.app/client.js"
+    data-repo="wzgogo/wanzi"
+    data-repo-id="MDEwOlJlcG9zaXRvcnkzNTc1MjI0MTQ="
+    data-category="Announcements"
+    data-category-id="DIC_kwDOFU9b7s4CSycO"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="light"
+    data-lang="zh-CN"
+    
+      data-loading="lazy"
+    
+    crossorigin="anonymous"
+    async
+  ></script>
+</div>
+
+  
+
+  
+  
+
+  
+
+  
+
+    
+
+  
+
+  
+
+
+    </div>
+
+    
+    <nav class="toc" id="toc">
+    <div class="toc-title">文章目录</div>
+    <div class="toc-content custom-scrollbar">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#一kind介绍">一、kind介绍</a></li>
+    <li><a href="#二kind安装">二、kind安装</a></li>
+    <li><a href="#三创建第一个集群">三、创建第一个集群</a></li>
+    <li><a href="#四集群操作">四、集群操作：</a>
+      <ul>
+        <li><a href="#1kind自定义集群名称">1、kind自定义集群名称：</a></li>
+        <li><a href="#2切换集群">2、切换集群：</a></li>
+        <li><a href="#3查看kind所有集群">3、查看kind所有集群</a></li>
+        <li><a href="#4导入镜像">4、导入镜像</a></li>
+      </ul>
+    </li>
+    <li><a href="#五集群配置">五、集群配置：</a>
+      <ul>
+        <li><a href="#1多节点集群">1、多节点集群</a></li>
+        <li><a href="#3挂载宿主机目录到节点容器持久化存储">3、挂载宿主机目录到节点容器持久化存储</a></li>
+        <li><a href="#4端口映射">4、端口映射</a></li>
+        <li><a href="#5自定义label">5、自定义label</a></li>
+        <li><a href="#6kubeadm自定义配置">6、kubeadm自定义配置：</a></li>
+        <li><a href="#7配置ingress">7、配置ingress</a></li>
+      </ul>
+    </li>
+    <li><a href="#六完整集群配置">六、完整集群配置</a></li>
+  </ul>
+</nav>
+    </div>
+  </nav>
+
+
+  </div>
+
+      </main>
+
+      <footer id="footer" class="footer">
+        <div class="icon-links">
+  
+  
+    <a href="https://github.com/wzgogo" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+  
+    <a href="https://www.zhihu.com/people/bijiq" rel="me noopener" class="iconfont"
+      title="zhihu"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M351.791182 562.469462l192.945407 0c0-45.367257-21.3871-71.939449-21.3871-71.939449L355.897709 490.530013c3.977591-82.182744 7.541767-187.659007 8.816806-226.835262l159.282726 0c0 0-0.86367-67.402109-18.578124-67.402109s-279.979646 0-279.979646 0 16.850783-88.141456 39.318494-127.053698c0 0-83.60514-4.510734-112.121614 106.962104S81.344656 355.077018 76.80834 367.390461c-4.536316 12.313443 24.62791 5.832845 36.941354 0 12.313443-5.832845 68.050885-25.924439 84.252893-103.69571l86.570681 0c1.165546 49.28652 4.596691 200.335724 3.515057 226.835262L109.86113 490.530013c-25.275663 18.147312-33.701566 71.939449-33.701566 71.939449L279.868105 562.469462c-8.497535 56.255235-23.417339 128.763642-44.275389 167.210279-33.05279 60.921511-50.55235 116.65793-169.802314 212.576513 0 0-19.442818 14.257725 40.829917 9.073656 60.273758-5.185093 117.305683-20.739347 156.840094-99.807147 20.553105-41.107233 41.805128-93.250824 58.386782-146.138358l-0.055259 0.185218 167.855986 193.263655c0 0 22.035876-51.847855 5.832845-108.880803L371.045711 650.610918l-42.1244 31.157627-0.045025 0.151449c11.69946-41.020252 20.11206-81.5749 22.726607-116.858498C351.665315 564.212152 351.72876 563.345412 351.791182 562.469462z"></path>
+  <path d="M584.918753 182.033893l0 668.840094 70.318532 0 28.807093 80.512708 121.875768-80.512708 153.600307 0L959.520453 182.033893 584.918753 182.033893zM887.150192 778.934538l-79.837326 0-99.578949 65.782216-23.537066-65.782216-24.855084 0L659.341766 256.673847l227.807403 0L887.149169 778.934538z"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://wnote.com/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+  
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2018 -
+    2023
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        丸子有记
+        
+      </span></span>
+
+  
+  
+
+  
+    <span>
+      <a href="https://www.foreverblog.cn/" target="_blank" > <img src="https://img.foreverblog.cn/logo_en_default.png" alt="" style="width:auto;height:16px;"> </a>|<a href="https://beian.miit.gov.cn" target="_blank">京ICP备2021004162号-1</a>
+    </span>
+  
+</div>
+
+      </footer>
+
+      <div class="button__back-to-top">
+        <a href="#back-to-top">
+          <i class="iconfont">
+            
+            <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+          </i>
+        </a>
+      </div>
+    </div>
+    
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.44aac06f997857a132df295f595d9c55336473784fc93fcb8c57b715abe23b00.js" integrity="sha256-RKrAb5l4V6Ey3ylfWV2cVTNkc3hPyT/LjFe3FaviOwA=" crossorigin="anonymous"></script>
+
+
+
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+  </body>
+</html>

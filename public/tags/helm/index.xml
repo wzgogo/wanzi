@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>helm on 丸子有记</title>
+    <link>https://wnote.com/tags/helm/</link>
+    <description>Recent content in helm on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Wed, 22 Mar 2023 18:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/helm/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>自定义Jenkins Agent集成docker和kubectl工具</title>
+      <link>https://wnote.com/post/cicd-jenkins-agent-docker-kubectl-helm/</link>
+      <pubDate>Wed, 22 Mar 2023 18:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/cicd-jenkins-agent-docker-kubectl-helm/</guid>
+      <description>由于我们Jenkins构建的时候，官方提供的jenkins-agent没有我们使用的工具，比如helm，kubectl，curl，argoc</description>
+    </item>
+    
+  </channel>
+</rss>

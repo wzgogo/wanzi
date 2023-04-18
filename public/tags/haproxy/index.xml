@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>haproxy on 丸子有记</title>
+    <link>https://wnote.com/tags/haproxy/</link>
+    <description>Recent content in haproxy on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Sun, 15 Aug 2021 17:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/haproxy/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>kubeadm部署高可用kubernetes集群</title>
+      <link>https://wnote.com/post/kubernetes-kubeadm-haproxy-keepalived-deploy/</link>
+      <pubDate>Sun, 15 Aug 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-kubeadm-haproxy-keepalived-deploy/</guid>
+      <description>为了后便后期验证私有化部署 ，最近内网环境需要快速搭建一套k8s集群，由于之前对于规模比较大的集群，我一般采用kubeasz和kubespra</description>
+    </item>
+    
+  </channel>
+</rss>

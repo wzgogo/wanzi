@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>证书 on 丸子有记</title>
+    <link>https://wnote.com/tags/%E8%AF%81%E4%B9%A6/</link>
+    <description>Recent content in 证书 on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Fri, 25 May 2018 13:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/%E8%AF%81%E4%B9%A6/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用OpenSSL签发证书</title>
+      <link>https://wnote.com/post/linux-openssl-issue-private-certificate/</link>
+      <pubDate>Fri, 25 May 2018 13:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/linux-openssl-issue-private-certificate/</guid>
+      <description>生成客户端私钥: 1 openssl genrsa -out server.key 2048 生成客户端证书： 1 openssl req -new -sha256 -x509 -days 3650 -key server.key -out server.crt 证书申请文件： 1 openssl req -new -key server.key -out server.csr 生成CA私钥 采用des3加密，需要输入4位</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>docker命令 on 丸子有记</title>
+    <link>https://wnote.com/tags/docker%E5%91%BD%E4%BB%A4/</link>
+    <description>Recent content in docker命令 on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Wed, 20 Jun 2018 16:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/docker%E5%91%BD%E4%BB%A4/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Docker基础命令</title>
+      <link>https://wnote.com/post/docker-commands-base/</link>
+      <pubDate>Wed, 20 Jun 2018 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/docker-commands-base/</guid>
+      <description>常用命令 1 2 3 4 5 6 7 8 docker info #查看本地docker信息 docker search openresty #搜索远程镜像仓库 docker images #查看当前系统镜像仓库镜像 docker ps #查看当前正在运行容器 docker pull centos</description>
+    </item>
+    
+  </channel>
+</rss>

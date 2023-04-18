@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>devops on 丸子有记</title>
+    <link>https://wnote.com/categories/devops/</link>
+    <description>Recent content in devops on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Fri, 26 Feb 2021 17:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/categories/devops/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>terraform自动化创建ECS</title>
+      <link>https://wnote.com/post/devops-terraform-create-aliyun-ecs/</link>
+      <pubDate>Fri, 26 Feb 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/devops-terraform-create-aliyun-ecs/</guid>
+      <description>快速创建一台阿里云ECS主机 指定terraform版本 这里我们指定了阿里云provider版本信息，并设置了terraform的版本要求 1 2</description>
+    </item>
+    
+    <item>
+      <title>terraform安装与命令详解</title>
+      <link>https://wnote.com/post/devops-terraform-command-detail/</link>
+      <pubDate>Thu, 25 Feb 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/devops-terraform-command-detail/</guid>
+      <description>安装Terraform Mac系统安装 1 2 brew tap hashicorp/tap brew install hashicorp/tap/terraform Linux系统安装 ubuntu安装 1 2 3 curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add - sudo apt-add-repository &amp;#34;deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs)main&amp;#34; sudo apt-get update &amp;amp;&amp;amp; sudo apt-get install terraform c</description>
+    </item>
+    
+    <item>
+      <title>自动化编排工具Terraform介绍</title>
+      <link>https://wnote.com/post/devops-terraform-about/</link>
+      <pubDate>Wed, 24 Feb 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/devops-terraform-about/</guid>
+      <description>Terraform是什么？： Terraform是由HashiCorp公司在2014年左右推出的开源资源编排工具, 目前几乎所有的主流云服务商都</description>
+    </item>
+    
+    <item>
+      <title>saltstack之saltapi</title>
+      <link>https://wnote.com/post/devops-saltstack-saltapi/</link>
+      <pubDate>Thu, 15 Feb 2018 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/devops-saltstack-saltapi/</guid>
+      <description>安装 1 yum -y install salt-api 配置 cat /etc/salt/master.d/api.conf #配置证书和端口 1 2 3 4 5 rest_cherrypy:port:8888debug:Truessl_crt:/etc/pki/tls/certs/localhost.crtssl_key:/etc/pki/tls/private/localhost_nopass.key cat /etc/salt/master.d/eauth.conf #设置权限 1 2 3 4 5 6 external_auth:pam:saltapi:- .*- &amp;#39;@wheel&amp;#39;- &amp;#39;@runner&amp;#39; 添加账号 1 2 useradd -M -s /sbin/nologin saltapi echo &amp;#34;saltapi_xxxxxx&amp;#34; | passwd saltapi --stdin 启动服务 1 2 systemctl enable salt-api systemctl start</description>
+    </item>
+    
+    <item>
+      <title>saltstack之salt命令大全</title>
+      <link>https://wnote.com/post/devops-saltstack-commands/</link>
+      <pubDate>Sat, 10 Feb 2018 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/devops-saltstack-commands/</guid>
+      <description>常用命令 1 2 3 4 5 6 7 8 9 salt -N &amp;#39;ceph&amp;#39; test.ping #测试连通性 salt -E &amp;#39;^server10*&amp;#39; test.ping #正则匹配连通性 salt -S 192.168.150.101 test.ping #根据agent ip地址匹配执行 salt -S 192.168.150.0/24 test.ping #根据agent ip地</description>
+    </item>
+    
+  </channel>
+</rss>

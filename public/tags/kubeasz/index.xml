@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>kubeasz on 丸子有记</title>
+    <link>https://wnote.com/tags/kubeasz/</link>
+    <description>Recent content in kubeasz on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Thu, 12 Dec 2019 10:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/kubeasz/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>kubeasz部署k8s集群</title>
+      <link>https://wnote.com/post/kubernetes-kubeasz-deploy-automation/</link>
+      <pubDate>Thu, 12 Dec 2019 10:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-kubeasz-deploy-automation/</guid>
+      <description>环境准备 Master节点 1 2 3 172.16.244.14172.16.244.16172.16.244.18 Node节点 1 2 172.16.244.25172.16.244.27 Master节点VIP地址: 172.16.243.13 部署工具:Ansible/kubeasz 初始化环境 安装Ans</description>
+    </item>
+    
+  </channel>
+</rss>

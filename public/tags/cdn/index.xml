@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>CDN on 丸子有记</title>
+    <link>https://wnote.com/tags/cdn/</link>
+    <description>Recent content in CDN on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Wed, 07 Sep 2022 12:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/cdn/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>对CDN建设一些总结与思考</title>
+      <link>https://wnote.com/post/linux-cdn-cloud-aliyun-cloudfront/</link>
+      <pubDate>Wed, 07 Sep 2022 12:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/linux-cdn-cloud-aliyun-cloudfront/</guid>
+      <description>新冠病毒疫情反反复复，对于日常生活和工作造成了不小影响，对于我最近半年发生了太多事情，家中亲人病重，奶奶去世，有很多事儿要忙，所以博客也停更</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Prometheusalert on 丸子有记</title>
+    <link>https://wnote.com/tags/prometheusalert/</link>
+    <description>Recent content in Prometheusalert on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Sat, 18 Sep 2021 17:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/prometheusalert/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>利用Prometheusalert打造Prometheus告警消息聚合</title>
+      <link>https://wnote.com/post/prometheus-prometheusalert-alertmanager/</link>
+      <pubDate>Sat, 18 Sep 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/prometheus-prometheusalert-alertmanager/</guid>
+      <description>部署prometheusalert 1 2 3 4 git clone https://github.com/feiyu563/PrometheusAlert.git cd PrometheusAlert/example/helm/prometheusalert #更新config/app.conf设置登陆用户信息，并配置数据库信息 helm install -n monitoring . 创建企业</description>
+    </item>
+    
+  </channel>
+</rss>

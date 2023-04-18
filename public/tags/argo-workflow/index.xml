@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>argo workflow on 丸子有记</title>
+    <link>https://wnote.com/tags/argo-workflow/</link>
+    <description>Recent content in argo workflow on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Fri, 07 May 2021 16:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/argo-workflow/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Argo Worflow实践一安装部署</title>
+      <link>https://wnote.com/post/cicd-argo-workflow-install-in-k8s/</link>
+      <pubDate>Fri, 07 May 2021 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/cicd-argo-workflow-install-in-k8s/</guid>
+      <description>简介&amp;amp;架构 Argo Workflows是一个开源容器级别工作流引擎，用于在Kubernetes上协调并行作业。 Argo Workflows通过抽象K</description>
+    </item>
+    
+  </channel>
+</rss>

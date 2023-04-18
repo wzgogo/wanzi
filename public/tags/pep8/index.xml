@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>PEP8 on 丸子有记</title>
+    <link>https://wnote.com/tags/pep8/</link>
+    <description>Recent content in PEP8 on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Sat, 20 Jan 2018 10:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/pep8/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>python编码规范</title>
+      <link>https://wnote.com/post/python-coding-standards/</link>
+      <pubDate>Sat, 20 Jan 2018 10:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/python-coding-standards/</guid>
+      <description>编码声明 默认不设置为ASCII,可设置为 1 # coding=&amp;lt;encoding name&amp;gt; 或 1 2 #!/usr/bin/python # -*- coding: &amp;lt;encoding name&amp;gt; -*- 或 1 2 #!/usr/bin/python # coding: utf-8 代码编排 四个空格一个缩进，不建议使用tab，更不建议混合使</description>
+    </item>
+    
+  </channel>
+</rss>

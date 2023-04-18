@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>slb on 丸子有记</title>
+    <link>https://wnote.com/tags/slb/</link>
+    <description>Recent content in slb on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Thu, 21 Oct 2021 17:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/slb/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>阿里云ACK同时支持公网和内网SLB</title>
+      <link>https://wnote.com/post/kubernetes-aliyun-ingress-slb-intranet/</link>
+      <pubDate>Thu, 21 Oct 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-aliyun-ingress-slb-intranet/</guid>
+      <description>一、背景 有一套ACK集群 成功部署Nginx ingress controller并绑定了公网SLB 注意：通过阿里云容器服务管理控制台创建的Kubernete</description>
+    </item>
+    
+  </channel>
+</rss>

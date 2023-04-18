@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ingress on 丸子有记</title>
+    <link>https://wnote.com/tags/ingress/</link>
+    <description>Recent content in ingress on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Mon, 08 Nov 2021 17:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/ingress/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>解决k8s下nginx文件上传限制和504网关超时</title>
+      <link>https://wnote.com/post/kubernetes-nginx-ingress-504/</link>
+      <pubDate>Mon, 08 Nov 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-nginx-ingress-504/</guid>
+      <description>最近业务使用k8s集群经常有两个问题需要解决，这里记录一下： 前端页面上传文件1M限制 前端页面发送POST请求到后端，出现504超时 第一个问题</description>
+    </item>
+    
+    <item>
+      <title>阿里云ACK同时支持公网和内网SLB</title>
+      <link>https://wnote.com/post/kubernetes-aliyun-ingress-slb-intranet/</link>
+      <pubDate>Thu, 21 Oct 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-aliyun-ingress-slb-intranet/</guid>
+      <description>一、背景 有一套ACK集群 成功部署Nginx ingress controller并绑定了公网SLB 注意：通过阿里云容器服务管理控制台创建的Kubernete</description>
+    </item>
+    
+    <item>
+      <title>kubernetes集群部署traefik2.1</title>
+      <link>https://wnote.com/post/kubernetes-traefik-v2.1-deploy/</link>
+      <pubDate>Tue, 17 Dec 2019 10:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-traefik-v2.1-deploy/</guid>
+      <description>架构&amp;amp;概念 Traefik2.x版本相比1.7.x架构有很大变化，正如上边这张架构图，最主要的功能是支持了TCP协议、增加了Route</description>
+    </item>
+    
+  </channel>
+</rss>

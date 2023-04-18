@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on 丸子有记</title>
+    <link>https://wnote.com/post/</link>
+    <description>Recent content in Posts on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Thu, 13 Apr 2023 18:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>kind构建轻量级kubernetes集群</title>
+      <link>https://wnote.com/post/kubernetes-kind-build-clusters/</link>
+      <pubDate>Thu, 13 Apr 2023 18:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-kind-build-clusters/</guid>
+      <description>最近在复习Golang，写了一个web应用，本地跑通以后想在k8s集群测试一番，苦于机器配置原因， 搭建一套完整的k8s集群还是有一些力不从心</description>
+    </item>
+    
+    <item>
+      <title>自定义Jenkins Agent集成docker和kubectl工具</title>
+      <link>https://wnote.com/post/cicd-jenkins-agent-docker-kubectl-helm/</link>
+      <pubDate>Wed, 22 Mar 2023 18:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/cicd-jenkins-agent-docker-kubectl-helm/</guid>
+      <description>由于我们Jenkins构建的时候，官方提供的jenkins-agent没有我们使用的工具，比如helm，kubectl，curl，argoc</description>
+    </item>
+    
+    <item>
+      <title>Jenkins Workspace和Maven仓库本地持久化存储</title>
+      <link>https://wnote.com/post/cicd-jenkins-localstorage-workspace-maven/</link>
+      <pubDate>Wed, 22 Mar 2023 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/cicd-jenkins-localstorage-workspace-maven/</guid>
+      <description>创建本地存储 由于是测试集群，我们这里直接使用本地volume存储即可； 由于这里jenkins server里运行用户为jenkins，且jen</description>
+    </item>
+    
+    <item>
+      <title>Go学习笔记 - Go基础知识复习</title>
+      <link>https://wnote.com/post/golang-note-datatype-struct/</link>
+      <pubDate>Fri, 17 Mar 2023 18:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/golang-note-datatype-struct/</guid>
+      <description>一、基础知识 1、基本数据类型 值类型： 1 2 3 4 5 6 7 8 9 10 11 12 bool（长度1Byte或1个字节）byte(1个字节，uint8别名)rune</description>
+    </item>
+    
+    <item>
+      <title>kubernetes环境下部署Jenkins</title>
+      <link>https://wnote.com/post/cicd-jenkins-in-kubernetes/</link>
+      <pubDate>Thu, 16 Mar 2023 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/cicd-jenkins-in-kubernetes/</guid>
+      <description>一、安装部署Jenkins 1、手动安装 手动安装就很简单，提前将yaml配置准备好即可， 所有CICD资源jenkins-install.yam</description>
+    </item>
+    
+    <item>
+      <title>Delve版本过低无法适配Goland</title>
+      <link>https://wnote.com/post/tools-goland-delve-err/</link>
+      <pubDate>Wed, 15 Mar 2023 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/tools-goland-delve-err/</guid>
+      <description>问题 Goland下最近调试代码，总是报如下错误： 1 WARNING:undefined behavior - version of Delve is too old for Go version 1.19.3 (maximum supported version 1.18) 解决方法 问题的大概的意思是Delve版本过低，无法满足当</description>
+    </item>
+    
+    <item>
+      <title>给博客自动续签免费SSL证书</title>
+      <link>https://wnote.com/post/tools-ssl-renew-acme/</link>
+      <pubDate>Sat, 12 Nov 2022 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/tools-ssl-renew-acme/</guid>
+      <description>背景 如果你拥有一个网站或者独立博客，你每年都需要关心自己网站SSL证书过期问题，最近wnote.com证书也快过期了； 申请SSL证书，既让网</description>
+    </item>
+    
+    <item>
+      <title>推荐一个Markdown写书神器，据说是GitBook替代者</title>
+      <link>https://wnote.com/post/tools-mdbook-write-books/</link>
+      <pubDate>Thu, 06 Oct 2022 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/tools-mdbook-write-books/</guid>
+      <description>mdBook简介 mdBook是一个Rust语言编写，Markdown创建书籍的命令行工具。它非常适合创建产品或API 文档、教程、课程材料或任</description>
+    </item>
+    
+    <item>
+      <title>对CDN建设一些总结与思考</title>
+      <link>https://wnote.com/post/linux-cdn-cloud-aliyun-cloudfront/</link>
+      <pubDate>Wed, 07 Sep 2022 12:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/linux-cdn-cloud-aliyun-cloudfront/</guid>
+      <description>新冠病毒疫情反反复复，对于日常生活和工作造成了不小影响，对于我最近半年发生了太多事情，家中亲人病重，奶奶去世，有很多事儿要忙，所以博客也停更</description>
+    </item>
+    
+    <item>
+      <title>解决k8s下nginx文件上传限制和504网关超时</title>
+      <link>https://wnote.com/post/kubernetes-nginx-ingress-504/</link>
+      <pubDate>Mon, 08 Nov 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-nginx-ingress-504/</guid>
+      <description>最近业务使用k8s集群经常有两个问题需要解决，这里记录一下： 前端页面上传文件1M限制 前端页面发送POST请求到后端，出现504超时 第一个问题</description>
+    </item>
+    
+    <item>
+      <title>阿里云ACK同时支持公网和内网SLB</title>
+      <link>https://wnote.com/post/kubernetes-aliyun-ingress-slb-intranet/</link>
+      <pubDate>Thu, 21 Oct 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-aliyun-ingress-slb-intranet/</guid>
+      <description>一、背景 有一套ACK集群 成功部署Nginx ingress controller并绑定了公网SLB 注意：通过阿里云容器服务管理控制台创建的Kubernete</description>
+    </item>
+    
+    <item>
+      <title>利用Prometheusalert打造Prometheus告警消息聚合</title>
+      <link>https://wnote.com/post/prometheus-prometheusalert-alertmanager/</link>
+      <pubDate>Sat, 18 Sep 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/prometheus-prometheusalert-alertmanager/</guid>
+      <description>部署prometheusalert 1 2 3 4 git clone https://github.com/feiyu563/PrometheusAlert.git cd PrometheusAlert/example/helm/prometheusalert #更新config/app.conf设置登陆用户信息，并配置数据库信息 helm install -n monitoring . 创建企业</description>
+    </item>
+    
+    <item>
+      <title>制定kubernetes集群备份策略</title>
+      <link>https://wnote.com/post/kubernetes-velero-etcd-backup/</link>
+      <pubDate>Sat, 11 Sep 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-velero-etcd-backup/</guid>
+      <description>对于备份，每家互联网公司技术人员都要去做的一件事儿，当然我们也不例外，今天我主要针对生产环境kubernetes集群制定一些自己的策略，这里</description>
+    </item>
+    
+    <item>
+      <title>如何快速搭建一套Greenplum集群</title>
+      <link>https://wnote.com/post/greenplum-docker-compose-installtion/</link>
+      <pubDate>Wed, 08 Sep 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/greenplum-docker-compose-installtion/</guid>
+      <description>最近内部项目支持大数据项目，需要模拟客户场景配置Greenplum(老版本4.2.2.4)，因此这里记录下greenplum集群搭建过程,其</description>
+    </item>
+    
+    <item>
+      <title>阿里云共享GPU方案测试</title>
+      <link>https://wnote.com/post/kubernetes-gpushare-aliyun/</link>
+      <pubDate>Tue, 31 Aug 2021 14:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-gpushare-aliyun/</guid>
+      <description>一、k8s部署GPU共享插件 部署之前需要确保k8s节点上已安装nvidia-driver和nvidia-docker，同时已将docker默</description>
+    </item>
+    
+    <item>
+      <title>kubeadm部署高可用kubernetes集群</title>
+      <link>https://wnote.com/post/kubernetes-kubeadm-haproxy-keepalived-deploy/</link>
+      <pubDate>Sun, 15 Aug 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-kubeadm-haproxy-keepalived-deploy/</guid>
+      <description>为了后便后期验证私有化部署 ，最近内网环境需要快速搭建一套k8s集群，由于之前对于规模比较大的集群，我一般采用kubeasz和kubespra</description>
+    </item>
+    
+    <item>
+      <title>阿里云PrivateZone&#43;Bind9&#43;Dnsmasq实现内部DNS</title>
+      <link>https://wnote.com/post/linux-dns-privatezone-bind9-dnsmasq/</link>
+      <pubDate>Sat, 10 Jul 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/linux-dns-privatezone-bind9-dnsmasq/</guid>
+      <description>需求： 阿里云集群能够解析内部域名 办公网解析内部域名+办公网上网解析 解决方法： 对于第一个问题，直接使用阿里云PrivateZone解析即可 对于</description>
+    </item>
+    
+    <item>
+      <title>Argo Events入门实践</title>
+      <link>https://wnote.com/post/cicd-argo-events-automate-task/</link>
+      <pubDate>Wed, 07 Jul 2021 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/cicd-argo-events-automate-task/</guid>
+      <description>前面我们介绍了Argo Workflow如何安装与触发任务，这一篇主要介绍一个新工具： ArgoEvents是什么？ Argo Events是一个事件驱动</description>
+    </item>
+    
+    <item>
+      <title>Argo Worflow实践一安装部署</title>
+      <link>https://wnote.com/post/cicd-argo-workflow-install-in-k8s/</link>
+      <pubDate>Fri, 07 May 2021 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/cicd-argo-workflow-install-in-k8s/</guid>
+      <description>简介&amp;amp;架构 Argo Workflows是一个开源容器级别工作流引擎，用于在Kubernetes上协调并行作业。 Argo Workflows通过抽象K</description>
+    </item>
+    
+    <item>
+      <title>Gitlab runner配置ceph s3</title>
+      <link>https://wnote.com/post/cicd-gitlab-runner-ceph-s3/</link>
+      <pubDate>Fri, 26 Mar 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/cicd-gitlab-runner-ceph-s3/</guid>
+      <description>对于前端项目Npm构建的时候，经常拉取前端库耗时比较长，另外不同的job之间复用也是一个问题，无论是artifacts或者cache最终我们</description>
+    </item>
+    
+  </channel>
+</rss>

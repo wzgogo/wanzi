@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>gitbook on 丸子有记</title>
+    <link>https://wnote.com/tags/gitbook/</link>
+    <description>Recent content in gitbook on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Thu, 06 Oct 2022 17:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/gitbook/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>推荐一个Markdown写书神器，据说是GitBook替代者</title>
+      <link>https://wnote.com/post/tools-mdbook-write-books/</link>
+      <pubDate>Thu, 06 Oct 2022 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/tools-mdbook-write-books/</guid>
+      <description>mdBook简介 mdBook是一个Rust语言编写，Markdown创建书籍的命令行工具。它非常适合创建产品或API 文档、教程、课程材料或任</description>
+    </item>
+    
+  </channel>
+</rss>

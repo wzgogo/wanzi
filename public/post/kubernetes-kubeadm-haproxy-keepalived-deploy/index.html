@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html
+  lang="zh-cn"
+  itemscope
+  itemtype="http://schema.org/WebPage"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>
+          kubeadm部署高可用kubernetes集群 - 丸子有记
+        </title>
+    
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="wanzi" /><meta name="description" content="kubeadm部署高可用kubernetes集群" />
+
+  <meta name="keywords" content="丸子有记, 运维, devops, sre, 运维架构, 运维开发, go语言, python" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="https://wnote.com/post/kubernetes-kubeadm-haproxy-keepalived-deploy/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.d8d87b982993a745e5e7b6a6cbf257be8c3e82aab5e485f0908ad7e6c3501ab2.css" integrity="sha256-2Nh7mCmTp0Xl57amy/JXvow&#43;gqq15IXwkIrX5sNQGrI=" media="screen" crossorigin="anonymous">
+
+
+
+<style>
+  .wallpaper {
+    background-image: url('/static/img/wallpaper.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+  }
+</style>
+
+
+
+
+<meta property="og:title" content="kubeadm部署高可用kubernetes集群" />
+<meta property="og:description" content="kubeadm部署高可用kubernetes集群" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://wnote.com/post/kubernetes-kubeadm-haproxy-keepalived-deploy/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-08-15T17:22:42+08:00" />
+<meta property="article:modified_time" content="2021-08-15T17:22:42+08:00" />
+
+<meta itemprop="name" content="kubeadm部署高可用kubernetes集群">
+<meta itemprop="description" content="kubeadm部署高可用kubernetes集群"><meta itemprop="datePublished" content="2021-08-15T17:22:42+08:00" />
+<meta itemprop="dateModified" content="2021-08-15T17:22:42+08:00" />
+<meta itemprop="wordCount" content="3169">
+<meta itemprop="keywords" content="kubeadm,k8s,haproxy,keepalived," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="kubeadm部署高可用kubernetes集群"/>
+<meta name="twitter:description" content="kubeadm部署高可用kubernetes集群"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+  </head>
+  <body>
+    <div id="back-to-top"></div>
+
+    <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">丸子有记</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/">主页</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/post/">归档</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/tags/">标签</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/categories/">分类</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/notes/">笔记</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/about/">关于</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+    
+      
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+    
+
+    
+      
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = '5463c477db2c64c03';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+    
+
+    
+
+
+    <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      丸子有记
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/">主页</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/post/">归档</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/tags/">标签</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/categories/">分类</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/notes/">笔记</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/about/">关于</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+    </header>
+
+    <div id="mobile-panel">
+      <main id="main" class="main bg-llight wallpaper">
+        <div class="content-wrapper">
+    <div id="content" class="content">
+      <article class="post">
+        
+        <header class="post-header">
+          <h1 class="post-title">kubeadm部署高可用kubernetes集群</h1>
+          
+
+          <div class="post-meta">
+  <div class="post-meta-author">
+    by
+      <a href="/about">
+        <span class="post-meta-author-name">
+          wanzi
+        </span>
+      </a>
+    
+  </div>
+
+  <div class="post-meta-time">
+    <time datetime="2021-08-15">
+      2021-08-15
+    </time>
+  </div>
+
+  
+
+
+  <div class="post-meta__right">
+    <span class="post-meta-more">
+        约 3169 字 -
+        预计阅读 7 分钟
+      </span>
+
+    <div class="post-meta-category">
+        <a href="https://wnote.com/categories/kubernetes/"> kubernetes </a>
+          
+      </div>
+
+
+    
+    
+
+
+    
+    
+  </div>
+</div>
+
+        </header>
+
+        
+        <div class="post-content">
+          <p>为了后便后期验证私有化部署
+，最近内网环境需要快速搭建一套k8s集群，由于之前对于规模比较大的集群，我一般采用kubeasz和kubespray来搞定，这次对于小环境集群，直接用kubeadm部署会更加高效。</p>
+<p>下面记录kubeadm部署过程：</p>
+<p>集群节点：</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#40a070">192.168.1.206</span><span style="color:#bbb"> </span>sd-cluster-206 node<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#40a070">192.168.1.207</span><span style="color:#bbb"> </span>sd-cluster-207 master,etcd<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#40a070">192.168.1.208</span><span style="color:#bbb"> </span>sd-cluster-208 master,etcd,haproxy,keepalived<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#40a070">192.168.1.209</span><span style="color:#bbb"> </span>sd-cluster-209 master,etcd,haproxy,keepalived<span style="color:#bbb">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>镜像版本：</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5">5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6">6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7">7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8">8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9">9</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker pull registry.cn-hangzhou.aliyuncs.com/google_containers/kube-controller-manager:v1.18.3
+docker pull registry.cn-hangzhou.aliyuncs.com/google_containers/kube-proxy:v1.18.3
+docker pull registry.cn-hangzhou.aliyuncs.com/google_containers/kube-apiserver:v1.18.3
+docker pull registry.cn-hangzhou.aliyuncs.com/google_containers/kube-scheduler:v1.18.3
+docker pull registry.cn-hangzhou.aliyuncs.com/google_containers/coredns:1.6.5
+docker pull registry.cn-hangzhou.aliyuncs.com/google_containers/etcd:3.4.3-0
+docker pull registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.2
+docker pull registry.cn-shanghai.aliyuncs.com/gcr-k8s/flannel:v0.14.0
+docker pull registry.cn-hangzhou.aliyuncs.com/google_containers/nginx-ingress-controller:v0.48.1
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="一基本环境设置">一、基本环境设置</h2>
+<h3 id="1安装docker并增加hosts">1、安装docker并增加hosts</h3>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5">5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6">6</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">yum install -y yum-utils device-mapper-persistent-data lvm2 git
+yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+yum install docker-ce -y
+systemctl  start docker
+systemctl  <span style="color:#007020">enable</span> docker
+systemctl  status docker
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="2配置hosts">2、配置hosts</h3>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5">5</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">cat  &gt;&gt;  /etc/hosts <span style="color:#4070a0">&lt;&lt; hhhh
+</span><span style="color:#4070a0">192.168.1.207 sd-cluster-207
+</span><span style="color:#4070a0">192.168.1.208 sd-cluster-208
+</span><span style="color:#4070a0">192.168.1.209 sd-cluster-209
+</span><span style="color:#4070a0">hhhh</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="3禁用防火墙并设置selinux">3、禁用防火墙并设置selinux</h3>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">systemctl stop firewalld
+systemctl disable firewalld
+setenforce <span style="color:#40a070">0</span>
+sed -i <span style="color:#4070a0">&#39;s/SELINUX=permissive/SELINUX=disabled/&#39;</span> /etc/sysconfig/selinux
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="4关闭swap">4、关闭swap</h3>
+<p>Kubernetes 1.8开始要求关闭系统的Swap，如果不关闭，默认配置下kubelet将无法启动。方法一,通过kubelet的启动参数–fail-swap-on=false更改这个限制。方法二,关闭系统的Swap。</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#60a0b0;font-style:italic"># swapoff -a</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>修改/etc/fstab文件，注释掉SWAP的自动挂载，使用free -m确认swap已经关闭。</p>
+<h3 id="5安装所有节点的kubeadm和kubeletipvsadm">5、安装所有节点的kubeadm和kubelet、ipvsadm</h3>
+<p>参考：https://developer.aliyun.com/mirror/kubernetes</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">cat <span style="color:#4070a0">&lt;&lt;EOF &gt; /etc/yum.repos.d/kubernetes.repo
+</span><span style="color:#4070a0">[kubernetes]
+</span><span style="color:#4070a0">name=Kubernetes
+</span><span style="color:#4070a0">baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/
+</span><span style="color:#4070a0">enabled=1
+</span><span style="color:#4070a0">gpgcheck=1
+</span><span style="color:#4070a0">repo_gpgcheck=1
+</span><span style="color:#4070a0">gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
+</span><span style="color:#4070a0">EOF</span>
+yum install -y --nogpgcheck  kubelet-1.18.3 kubeadm-1.18.3 ipvsadm 
+systemctl <span style="color:#007020">enable</span> kubelet <span style="color:#666">&amp;&amp;</span> systemctl start kubelet
+</code></pre></td></tr></table>
+</div>
+</div><p>ps: 由于官网未开放同步方式, 可能会有索引gpg检查失败的情况, 这时请用 yum install -y &ndash;nogpgcheck kubelet kubeadm kubectl 安装</p>
+<p>增加ipvsadm，如果重新开机，需要重新加载（可以写在 /etc/rc.local 中开机自动加载）</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5">5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6">6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7">7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8">8</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">cat <span style="color:#4070a0">&lt;&lt;EOF &gt;&gt; /etc/rc.local
+</span><span style="color:#4070a0">modprobe ip_vs
+</span><span style="color:#4070a0">modprobe ip_vs_rr
+</span><span style="color:#4070a0">modprobe ip_vs_wrr
+</span><span style="color:#4070a0">modprobe ip_vs_sh
+</span><span style="color:#4070a0">modprobe nf_conntrack_ipv4
+</span><span style="color:#4070a0">EOF</span>
+chmod +x /etc/rc.local
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="二keepalived配合haproxy实现负载均衡器高可用">二、keepalived配合haproxy实现负载均衡器高可用</h2>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">yum -y install keepalived haproxy
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="1keepalived配置">1、keepalived配置</h3>
+<p>192.168.1.208配置</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">vrrp_script chk_ha {<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>script &#34;killall -0 haproxy&#34;  <span style="color:#bbb">
+</span><span style="color:#bbb">	</span>interval 2 		<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>weight -20 					<span style="color:#bbb">
+</span><span style="color:#bbb"></span>}<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span>vrrp_instance VI_1 {<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>state MASTER<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>interface bond0<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>virtual_router_id 33<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>mcast_src_ip 192.168.1.208<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>priority 100 		<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>nopreempt 			<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>advert_int 1 				<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>authentication {<span style="color:#bbb">
+</span><span style="color:#bbb">		</span>auth_type PASS<span style="color:#bbb">
+</span><span style="color:#bbb">		</span>auth_pass hak8s<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>}<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb">	</span>track_script {<span style="color:#bbb">
+</span><span style="color:#bbb">		</span>chk_ha			## 执行haproxy监测<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>}<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb">	</span>virtual_ipaddress {<span style="color:#bbb">
+</span><span style="color:#bbb">		</span><span style="color:#40a070">192.168.1.205</span>/24		##VIP <span style="color:#bbb">
+</span><span style="color:#bbb">	</span>}<span style="color:#bbb">
+</span><span style="color:#bbb"></span>}<span style="color:#bbb">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>192.168.1.209配置</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">vrrp_script chk_ha {<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>script &#34;killall -0 haproxy&#34;<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>interval 2<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>weight -20<span style="color:#bbb">
+</span><span style="color:#bbb"></span>}<span style="color:#bbb">
+</span><span style="color:#bbb"></span>vrrp_instance VI_1 {<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>state BACKUP<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>interface bond0<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>virtual_router_id 33<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>mcast_src_ip 192.168.1.209<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>priority 90<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>advert_int 1<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>authentication {<span style="color:#bbb">
+</span><span style="color:#bbb">		</span>auth_type PASS<span style="color:#bbb">
+</span><span style="color:#bbb">		</span>auth_pass hak8s<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>}<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>track_script {<span style="color:#bbb">
+</span><span style="color:#bbb">		</span>chk_ha<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>}<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>virtual_ipaddress {<span style="color:#bbb">
+</span><span style="color:#bbb">		</span><span style="color:#40a070">192.168.1.205</span>/24<span style="color:#bbb">
+</span><span style="color:#bbb">	</span>}<span style="color:#bbb">
+</span><span style="color:#bbb"></span>}<span style="color:#bbb">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="2haproxy配置">2、haproxy配置</h3>
+<p>208和209两个master的haproxy配置一样：</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">global<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>log /dev/log local0<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>maxconn 65535<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>chroot /var/lib/haproxy<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>pidfile /var/run/haproxy.pid<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>stats socket /var/lib/haproxy/stats<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>stats timeout 30s<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>user haproxy<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>group haproxy<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>daemon<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span>defaults<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>log global<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>retries 3<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>option redispatch<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>option dontlognull<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>timeout connect 5000<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>timeout client  50000<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>timeout server  50000<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span>frontend k8s-apiserver<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>bind *:8443<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>mode tcp<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>balance roundrobin<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>server sd-cluster-04 192.168.1.207:6443 weight 5 check inter 2000 rise 2 fall 3<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>server sd-cluster-05 192.168.1.208:6443 weight 3 check inter 2000 rise 2 fall 3<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>server sd-cluster-06 192.168.1.209:6443 weight 3 check inter 2000 rise 2 fall 3<span style="color:#bbb">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>至此，haproxy高可用已经搭建完成，验证方法，直接关闭208的keepalived服务，看vip是否飘逸到209机器上。</p>
+<h2 id="三kubeadm初始化k8s集群">三、kubeadm初始化k8s集群</h2>
+<h3 id="1初始化第一台master">1、初始化第一台master</h3>
+<p>kubeadm-config.yaml配置</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="34"><a style="outline: none; text-decoration:none; color:inherit" href="#34">34</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="35"><a style="outline: none; text-decoration:none; color:inherit" href="#35">35</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="36"><a style="outline: none; text-decoration:none; color:inherit" href="#36">36</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="37"><a style="outline: none; text-decoration:none; color:inherit" href="#37">37</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="38"><a style="outline: none; text-decoration:none; color:inherit" href="#38">38</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="39"><a style="outline: none; text-decoration:none; color:inherit" href="#39">39</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="40"><a style="outline: none; text-decoration:none; color:inherit" href="#40">40</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="41"><a style="outline: none; text-decoration:none; color:inherit" href="#41">41</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="42"><a style="outline: none; text-decoration:none; color:inherit" href="#42">42</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="43"><a style="outline: none; text-decoration:none; color:inherit" href="#43">43</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="44"><a style="outline: none; text-decoration:none; color:inherit" href="#44">44</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="45"><a style="outline: none; text-decoration:none; color:inherit" href="#45">45</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#60a0b0;font-style:italic">#kubeadm-config.yaml</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>kubeadm.k8s.io/v1beta2<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">bootstrapTokens</span>:<span style="color:#bbb">
+</span><span style="color:#bbb"></span>- <span style="color:#062873;font-weight:bold">groups</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- system:bootstrappers:kubeadm:default-node-token<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">token</span>:<span style="color:#bbb"> </span>abcdef.0123456789abcdef<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">ttl</span>:<span style="color:#bbb"> </span>24h0m0s<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">usages</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- signing<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- authentication<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>InitConfiguration<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">localAPIEndpoint</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">advertiseAddress</span>:<span style="color:#bbb"> </span><span style="color:#40a070">192.168.1.208</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">bindPort</span>:<span style="color:#bbb"> </span><span style="color:#40a070">6443</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">nodeRegistration</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">criSocket</span>:<span style="color:#bbb"> </span>/var/run/dockershim.sock<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>sd-cluster-208<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">taints</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- <span style="color:#062873;font-weight:bold">effect</span>:<span style="color:#bbb"> </span>NoSchedule<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">key</span>:<span style="color:#bbb"> </span>node-role.kubernetes.io/master<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#0e84b5;font-weight:bold">---</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">apiServer</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">timeoutForControlPlane</span>:<span style="color:#bbb"> </span>4m0s<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>kubeadm.k8s.io/v1beta2<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">certificatesDir</span>:<span style="color:#bbb"> </span>/etc/kubernetes/pki<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">clusterName</span>:<span style="color:#bbb"> </span>kubernetes<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">controlPlaneEndpoint</span>:<span style="color:#bbb"> </span><span style="color:#4070a0">&#34;192.168.1.208:8443&#34;</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">controllerManager</span>:<span style="color:#bbb"> </span>{}<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">dns</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">type</span>:<span style="color:#bbb"> </span>CoreDNS<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">etcd</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">local</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">dataDir</span>:<span style="color:#bbb"> </span>/var/lib/etcd<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">imageRepository</span>:<span style="color:#bbb"> </span>registry.cn-hangzhou.aliyuncs.com/google_containers<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>ClusterConfiguration<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">kubernetesVersion</span>:<span style="color:#bbb"> </span>v1.18.3<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">networking</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">dnsDomain</span>:<span style="color:#bbb"> </span>cluster.local<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">podSubnet</span>:<span style="color:#bbb"> </span><span style="color:#40a070">10.244.0.0</span>/16<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">serviceSubnet</span>:<span style="color:#bbb"> </span><span style="color:#40a070">10.96.0.0</span>/16<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">scheduler</span>:<span style="color:#bbb"> </span>{}<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#0e84b5;font-weight:bold">---</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>kubeproxy.config.k8s.io/v1alpha1<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>KubeProxyConfiguration<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">mode</span>:<span style="color:#bbb"> </span>ipvs<span style="color:#bbb">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="34"><a style="outline: none; text-decoration:none; color:inherit" href="#34">34</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="35"><a style="outline: none; text-decoration:none; color:inherit" href="#35">35</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="36"><a style="outline: none; text-decoration:none; color:inherit" href="#36">36</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="37"><a style="outline: none; text-decoration:none; color:inherit" href="#37">37</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="38"><a style="outline: none; text-decoration:none; color:inherit" href="#38">38</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="39"><a style="outline: none; text-decoration:none; color:inherit" href="#39">39</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="40"><a style="outline: none; text-decoration:none; color:inherit" href="#40">40</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="41"><a style="outline: none; text-decoration:none; color:inherit" href="#41">41</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="42"><a style="outline: none; text-decoration:none; color:inherit" href="#42">42</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="43"><a style="outline: none; text-decoration:none; color:inherit" href="#43">43</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="44"><a style="outline: none; text-decoration:none; color:inherit" href="#44">44</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="45"><a style="outline: none; text-decoration:none; color:inherit" href="#45">45</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="46"><a style="outline: none; text-decoration:none; color:inherit" href="#46">46</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="47"><a style="outline: none; text-decoration:none; color:inherit" href="#47">47</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="48"><a style="outline: none; text-decoration:none; color:inherit" href="#48">48</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="49"><a style="outline: none; text-decoration:none; color:inherit" href="#49">49</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="50"><a style="outline: none; text-decoration:none; color:inherit" href="#50">50</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="51"><a style="outline: none; text-decoration:none; color:inherit" href="#51">51</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="52"><a style="outline: none; text-decoration:none; color:inherit" href="#52">52</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="53"><a style="outline: none; text-decoration:none; color:inherit" href="#53">53</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="54"><a style="outline: none; text-decoration:none; color:inherit" href="#54">54</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="55"><a style="outline: none; text-decoration:none; color:inherit" href="#55">55</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="56"><a style="outline: none; text-decoration:none; color:inherit" href="#56">56</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="57"><a style="outline: none; text-decoration:none; color:inherit" href="#57">57</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="58"><a style="outline: none; text-decoration:none; color:inherit" href="#58">58</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="59"><a style="outline: none; text-decoration:none; color:inherit" href="#59">59</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="60"><a style="outline: none; text-decoration:none; color:inherit" href="#60">60</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="61"><a style="outline: none; text-decoration:none; color:inherit" href="#61">61</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="62"><a style="outline: none; text-decoration:none; color:inherit" href="#62">62</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="63"><a style="outline: none; text-decoration:none; color:inherit" href="#63">63</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="64"><a style="outline: none; text-decoration:none; color:inherit" href="#64">64</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="65"><a style="outline: none; text-decoration:none; color:inherit" href="#65">65</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="66"><a style="outline: none; text-decoration:none; color:inherit" href="#66">66</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="67"><a style="outline: none; text-decoration:none; color:inherit" href="#67">67</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="68"><a style="outline: none; text-decoration:none; color:inherit" href="#68">68</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="69"><a style="outline: none; text-decoration:none; color:inherit" href="#69">69</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="70"><a style="outline: none; text-decoration:none; color:inherit" href="#70">70</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="71"><a style="outline: none; text-decoration:none; color:inherit" href="#71">71</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="72"><a style="outline: none; text-decoration:none; color:inherit" href="#72">72</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="73"><a style="outline: none; text-decoration:none; color:inherit" href="#73">73</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="74"><a style="outline: none; text-decoration:none; color:inherit" href="#74">74</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="75"><a style="outline: none; text-decoration:none; color:inherit" href="#75">75</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="76"><a style="outline: none; text-decoration:none; color:inherit" href="#76">76</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="77"><a style="outline: none; text-decoration:none; color:inherit" href="#77">77</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="78"><a style="outline: none; text-decoration:none; color:inherit" href="#78">78</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="79"><a style="outline: none; text-decoration:none; color:inherit" href="#79">79</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="80"><a style="outline: none; text-decoration:none; color:inherit" href="#80">80</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="81"><a style="outline: none; text-decoration:none; color:inherit" href="#81">81</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="82"><a style="outline: none; text-decoration:none; color:inherit" href="#82">82</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="83"><a style="outline: none; text-decoration:none; color:inherit" href="#83">83</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="84"><a style="outline: none; text-decoration:none; color:inherit" href="#84">84</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="85"><a style="outline: none; text-decoration:none; color:inherit" href="#85">85</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="86"><a style="outline: none; text-decoration:none; color:inherit" href="#86">86</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="87"><a style="outline: none; text-decoration:none; color:inherit" href="#87">87</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="88"><a style="outline: none; text-decoration:none; color:inherit" href="#88">88</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="89"><a style="outline: none; text-decoration:none; color:inherit" href="#89">89</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#60a0b0;font-style:italic"># kubeadm init --config kubeadm-config.yaml --upload-certs</span>
+W0828 03:02:37.249435   <span style="color:#40a070">17451</span> configset.go:202<span style="color:#666">]</span> WARNING: kubeadm cannot validate component configs <span style="color:#007020;font-weight:bold">for</span> API groups <span style="color:#666">[</span>kubelet.config.k8s.io kubeproxy.config.k8s.io<span style="color:#666">]</span>
+<span style="color:#666">[</span>init<span style="color:#666">]</span> Using Kubernetes version: v1.18.3
+<span style="color:#666">[</span>preflight<span style="color:#666">]</span> Running pre-flight checks
+	<span style="color:#666">[</span>WARNING IsDockerSystemdCheck<span style="color:#666">]</span>: detected <span style="color:#4070a0">&#34;cgroupfs&#34;</span> as the Docker cgroup driver. The recommended driver is <span style="color:#4070a0">&#34;systemd&#34;</span>. Please follow the guide at https://kubernetes.io/docs/setup/cri/
+<span style="color:#666">[</span>preflight<span style="color:#666">]</span> Pulling images required <span style="color:#007020;font-weight:bold">for</span> setting up a Kubernetes cluster
+<span style="color:#666">[</span>preflight<span style="color:#666">]</span> This might take a minute or two, depending on the speed of your internet connection
+<span style="color:#666">[</span>preflight<span style="color:#666">]</span> You can also perform this action in beforehand using <span style="color:#4070a0">&#39;kubeadm config images pull&#39;</span>
+<span style="color:#666">[</span>kubelet-start<span style="color:#666">]</span> Writing kubelet environment file with flags to file <span style="color:#4070a0">&#34;/var/lib/kubelet/kubeadm-flags.env&#34;</span>
+<span style="color:#666">[</span>kubelet-start<span style="color:#666">]</span> Writing kubelet configuration to file <span style="color:#4070a0">&#34;/var/lib/kubelet/config.yaml&#34;</span>
+<span style="color:#666">[</span>kubelet-start<span style="color:#666">]</span> Starting the kubelet
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Using certificateDir folder <span style="color:#4070a0">&#34;/etc/kubernetes/pki&#34;</span>
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Generating <span style="color:#4070a0">&#34;ca&#34;</span> certificate and key
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Generating <span style="color:#4070a0">&#34;apiserver&#34;</span> certificate and key
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> apiserver serving cert is signed <span style="color:#007020;font-weight:bold">for</span> DNS names <span style="color:#666">[</span>sd-cluster-208 kubernetes kubernetes.default kubernetes.default.svc kubernetes.default.svc.cluster.local<span style="color:#666">]</span> and IPs <span style="color:#666">[</span>10.96.0.1 192.168.1.208 192.168.1.205<span style="color:#666">]</span>
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Generating <span style="color:#4070a0">&#34;apiserver-kubelet-client&#34;</span> certificate and key
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Generating <span style="color:#4070a0">&#34;front-proxy-ca&#34;</span> certificate and key
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Generating <span style="color:#4070a0">&#34;front-proxy-client&#34;</span> certificate and key
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Generating <span style="color:#4070a0">&#34;etcd/ca&#34;</span> certificate and key
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Generating <span style="color:#4070a0">&#34;etcd/server&#34;</span> certificate and key
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> etcd/server serving cert is signed <span style="color:#007020;font-weight:bold">for</span> DNS names <span style="color:#666">[</span>sd-cluster-208 localhost<span style="color:#666">]</span> and IPs <span style="color:#666">[</span>192.168.1.208 127.0.0.1 ::1<span style="color:#666">]</span>
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Generating <span style="color:#4070a0">&#34;etcd/peer&#34;</span> certificate and key
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> etcd/peer serving cert is signed <span style="color:#007020;font-weight:bold">for</span> DNS names <span style="color:#666">[</span>sd-cluster-208 localhost<span style="color:#666">]</span> and IPs <span style="color:#666">[</span>192.168.1.208 127.0.0.1 ::1<span style="color:#666">]</span>
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Generating <span style="color:#4070a0">&#34;etcd/healthcheck-client&#34;</span> certificate and key
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Generating <span style="color:#4070a0">&#34;apiserver-etcd-client&#34;</span> certificate and key
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Generating <span style="color:#4070a0">&#34;sa&#34;</span> key and public key
+<span style="color:#666">[</span>kubeconfig<span style="color:#666">]</span> Using kubeconfig folder <span style="color:#4070a0">&#34;/etc/kubernetes&#34;</span>
+<span style="color:#666">[</span>endpoint<span style="color:#666">]</span> WARNING: port specified in controlPlaneEndpoint overrides bindPort in the controlplane address
+<span style="color:#666">[</span>kubeconfig<span style="color:#666">]</span> Writing <span style="color:#4070a0">&#34;admin.conf&#34;</span> kubeconfig file
+<span style="color:#666">[</span>endpoint<span style="color:#666">]</span> WARNING: port specified in controlPlaneEndpoint overrides bindPort in the controlplane address
+<span style="color:#666">[</span>kubeconfig<span style="color:#666">]</span> Writing <span style="color:#4070a0">&#34;kubelet.conf&#34;</span> kubeconfig file
+<span style="color:#666">[</span>endpoint<span style="color:#666">]</span> WARNING: port specified in controlPlaneEndpoint overrides bindPort in the controlplane address
+<span style="color:#666">[</span>kubeconfig<span style="color:#666">]</span> Writing <span style="color:#4070a0">&#34;controller-manager.conf&#34;</span> kubeconfig file
+<span style="color:#666">[</span>endpoint<span style="color:#666">]</span> WARNING: port specified in controlPlaneEndpoint overrides bindPort in the controlplane address
+<span style="color:#666">[</span>kubeconfig<span style="color:#666">]</span> Writing <span style="color:#4070a0">&#34;scheduler.conf&#34;</span> kubeconfig file
+<span style="color:#666">[</span>control-plane<span style="color:#666">]</span> Using manifest folder <span style="color:#4070a0">&#34;/etc/kubernetes/manifests&#34;</span>
+<span style="color:#666">[</span>control-plane<span style="color:#666">]</span> Creating static Pod manifest <span style="color:#007020;font-weight:bold">for</span> <span style="color:#4070a0">&#34;kube-apiserver&#34;</span>
+<span style="color:#666">[</span>control-plane<span style="color:#666">]</span> Creating static Pod manifest <span style="color:#007020;font-weight:bold">for</span> <span style="color:#4070a0">&#34;kube-controller-manager&#34;</span>
+W0828 03:02:43.787797   <span style="color:#40a070">17451</span> manifests.go:225<span style="color:#666">]</span> the default kube-apiserver authorization-mode is <span style="color:#4070a0">&#34;Node,RBAC&#34;</span>; using <span style="color:#4070a0">&#34;Node,RBAC&#34;</span>
+<span style="color:#666">[</span>control-plane<span style="color:#666">]</span> Creating static Pod manifest <span style="color:#007020;font-weight:bold">for</span> <span style="color:#4070a0">&#34;kube-scheduler&#34;</span>
+W0828 03:02:43.789895   <span style="color:#40a070">17451</span> manifests.go:225<span style="color:#666">]</span> the default kube-apiserver authorization-mode is <span style="color:#4070a0">&#34;Node,RBAC&#34;</span>; using <span style="color:#4070a0">&#34;Node,RBAC&#34;</span>
+<span style="color:#666">[</span>etcd<span style="color:#666">]</span> Creating static Pod manifest <span style="color:#007020;font-weight:bold">for</span> <span style="color:#007020">local</span> etcd in <span style="color:#4070a0">&#34;/etc/kubernetes/manifests&#34;</span>
+<span style="color:#666">[</span>wait-control-plane<span style="color:#666">]</span> Waiting <span style="color:#007020;font-weight:bold">for</span> the kubelet to boot up the control plane as static Pods from directory <span style="color:#4070a0">&#34;/etc/kubernetes/manifests&#34;</span>. This can take up to 4m0s
+<span style="color:#666">[</span>apiclient<span style="color:#666">]</span> All control plane components are healthy after 23.015352 seconds
+<span style="color:#666">[</span>upload-config<span style="color:#666">]</span> Storing the configuration used in ConfigMap <span style="color:#4070a0">&#34;kubeadm-config&#34;</span> in the <span style="color:#4070a0">&#34;kube-system&#34;</span> Namespace
+<span style="color:#666">[</span>kubelet<span style="color:#666">]</span> Creating a ConfigMap <span style="color:#4070a0">&#34;kubelet-config-1.18&#34;</span> in namespace kube-system with the configuration <span style="color:#007020;font-weight:bold">for</span> the kubelets in the cluster
+<span style="color:#666">[</span>upload-certs<span style="color:#666">]</span> Storing the certificates in Secret <span style="color:#4070a0">&#34;kubeadm-certs&#34;</span> in the <span style="color:#4070a0">&#34;kube-system&#34;</span> Namespace
+<span style="color:#666">[</span>upload-certs<span style="color:#666">]</span> Using certificate key:
+0adac55426d376e72f21ec3aee2465f754e78810700843cb75c270be26eaeaf1
+<span style="color:#666">[</span>mark-control-plane<span style="color:#666">]</span> Marking the node sd-cluster-208 as control-plane by adding the label <span style="color:#4070a0">&#34;node-role.kubernetes.io/master=&#39;&#39;&#34;</span>
+<span style="color:#666">[</span>mark-control-plane<span style="color:#666">]</span> Marking the node sd-cluster-208 as control-plane by adding the taints <span style="color:#666">[</span>node-role.kubernetes.io/master:NoSchedule<span style="color:#666">]</span>
+<span style="color:#666">[</span>bootstrap-token<span style="color:#666">]</span> Using token: abcdef.0123456789abcdef
+<span style="color:#666">[</span>bootstrap-token<span style="color:#666">]</span> Configuring bootstrap tokens, cluster-info ConfigMap, RBAC Roles
+<span style="color:#666">[</span>bootstrap-token<span style="color:#666">]</span> configured RBAC rules to allow Node Bootstrap tokens to get nodes
+<span style="color:#666">[</span>bootstrap-token<span style="color:#666">]</span> configured RBAC rules to allow Node Bootstrap tokens to post CSRs in order <span style="color:#007020;font-weight:bold">for</span> nodes to get long term certificate credentials
+<span style="color:#666">[</span>bootstrap-token<span style="color:#666">]</span> configured RBAC rules to allow the csrapprover controller automatically approve CSRs from a Node Bootstrap Token
+<span style="color:#666">[</span>bootstrap-token<span style="color:#666">]</span> configured RBAC rules to allow certificate rotation <span style="color:#007020;font-weight:bold">for</span> all node client certificates in the cluster
+<span style="color:#666">[</span>bootstrap-token<span style="color:#666">]</span> Creating the <span style="color:#4070a0">&#34;cluster-info&#34;</span> ConfigMap in the <span style="color:#4070a0">&#34;kube-public&#34;</span> namespace
+<span style="color:#666">[</span>kubelet-finalize<span style="color:#666">]</span> Updating <span style="color:#4070a0">&#34;/etc/kubernetes/kubelet.conf&#34;</span> to point to a rotatable kubelet client certificate and key
+<span style="color:#666">[</span>addons<span style="color:#666">]</span> Applied essential addon: CoreDNS
+<span style="color:#666">[</span>endpoint<span style="color:#666">]</span> WARNING: port specified in controlPlaneEndpoint overrides bindPort in the controlplane address
+<span style="color:#666">[</span>addons<span style="color:#666">]</span> Applied essential addon: kube-proxy
+
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p <span style="color:#bb60d5">$HOME</span>/.kube
+  sudo cp -i /etc/kubernetes/admin.conf <span style="color:#bb60d5">$HOME</span>/.kube/config
+  sudo chown <span style="color:#007020;font-weight:bold">$(</span>id -u<span style="color:#007020;font-weight:bold">)</span>:<span style="color:#007020;font-weight:bold">$(</span>id -g<span style="color:#007020;font-weight:bold">)</span> <span style="color:#bb60d5">$HOME</span>/.kube/config
+
+You should now deploy a pod network to the cluster.
+Run <span style="color:#4070a0">&#34;kubectl apply -f [podnetwork].yaml&#34;</span> with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+You can now join any number of the control-plane node running the following <span style="color:#007020">command</span> on each as root:
+
+  kubeadm join 192.168.1.205:8443 --token abcdef.0123456789abcdef <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>    --discovery-token-ca-cert-hash sha256:7400f57a033f7527c80a4b015b54b4b6a88ccb2184ab9a6e39b709fb56e10486 <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>    --control-plane --certificate-key 0adac55426d376e72f21ec3aee2465f754e78810700843cb75c270be26eaeaf1
+
+Please note that the certificate-key gives access to cluster sensitive data, keep it secret!
+As a safeguard, uploaded-certs will be deleted in two hours; If necessary, you can use
+<span style="color:#4070a0">&#34;kubeadm init phase upload-certs --upload-certs&#34;</span> to reload certs afterward.
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 192.168.1.205:8443 --token abcdef.0123456789abcdef <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>    --discovery-token-ca-cert-hash sha256:7400f57a033f7527c80a4b015b54b4b6a88ccb2184ab9a6e39b709fb56e10486
+</code></pre></td></tr></table>
+</div>
+</div><p>配置master节点kubeconfig</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">mkdir -p <span style="color:#bb60d5">$HOME</span>/.kube
+cp -i /etc/kubernetes/admin.conf <span style="color:#bb60d5">$HOME</span>/.kube/config
+chown <span style="color:#007020;font-weight:bold">$(</span>id -u<span style="color:#007020;font-weight:bold">)</span>:<span style="color:#007020;font-weight:bold">$(</span>id -g<span style="color:#007020;font-weight:bold">)</span> <span style="color:#bb60d5">$HOME</span>/.kube/config
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="2新master节点加入集群">2、新master节点加入集群</h3>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="34"><a style="outline: none; text-decoration:none; color:inherit" href="#34">34</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="35"><a style="outline: none; text-decoration:none; color:inherit" href="#35">35</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="36"><a style="outline: none; text-decoration:none; color:inherit" href="#36">36</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="37"><a style="outline: none; text-decoration:none; color:inherit" href="#37">37</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="38"><a style="outline: none; text-decoration:none; color:inherit" href="#38">38</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="39"><a style="outline: none; text-decoration:none; color:inherit" href="#39">39</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="40"><a style="outline: none; text-decoration:none; color:inherit" href="#40">40</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="41"><a style="outline: none; text-decoration:none; color:inherit" href="#41">41</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="42"><a style="outline: none; text-decoration:none; color:inherit" href="#42">42</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="43"><a style="outline: none; text-decoration:none; color:inherit" href="#43">43</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="44"><a style="outline: none; text-decoration:none; color:inherit" href="#44">44</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="45"><a style="outline: none; text-decoration:none; color:inherit" href="#45">45</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="46"><a style="outline: none; text-decoration:none; color:inherit" href="#46">46</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="47"><a style="outline: none; text-decoration:none; color:inherit" href="#47">47</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="48"><a style="outline: none; text-decoration:none; color:inherit" href="#48">48</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="49"><a style="outline: none; text-decoration:none; color:inherit" href="#49">49</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="50"><a style="outline: none; text-decoration:none; color:inherit" href="#50">50</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="51"><a style="outline: none; text-decoration:none; color:inherit" href="#51">51</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="52"><a style="outline: none; text-decoration:none; color:inherit" href="#52">52</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="53"><a style="outline: none; text-decoration:none; color:inherit" href="#53">53</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="54"><a style="outline: none; text-decoration:none; color:inherit" href="#54">54</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="55"><a style="outline: none; text-decoration:none; color:inherit" href="#55">55</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="56"><a style="outline: none; text-decoration:none; color:inherit" href="#56">56</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="57"><a style="outline: none; text-decoration:none; color:inherit" href="#57">57</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="58"><a style="outline: none; text-decoration:none; color:inherit" href="#58">58</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="59"><a style="outline: none; text-decoration:none; color:inherit" href="#59">59</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="60"><a style="outline: none; text-decoration:none; color:inherit" href="#60">60</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="61"><a style="outline: none; text-decoration:none; color:inherit" href="#61">61</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="62"><a style="outline: none; text-decoration:none; color:inherit" href="#62">62</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="63"><a style="outline: none; text-decoration:none; color:inherit" href="#63">63</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="64"><a style="outline: none; text-decoration:none; color:inherit" href="#64">64</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="65"><a style="outline: none; text-decoration:none; color:inherit" href="#65">65</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="66"><a style="outline: none; text-decoration:none; color:inherit" href="#66">66</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="67"><a style="outline: none; text-decoration:none; color:inherit" href="#67">67</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#60a0b0;font-style:italic"># kubeadm join 192.168.1.205:8443 --token abcdef.0123456789abcdef \</span>
+&gt;     --discovery-token-ca-cert-hash sha256:7400f57a033f7527c80a4b015b54b4b6a88ccb2184ab9a6e39b709fb56e10486 <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>&gt;     --control-plane --certificate-key 0adac55426d376e72f21ec3aee2465f754e78810700843cb75c270be26eaeaf1
+<span style="color:#666">[</span>preflight<span style="color:#666">]</span> Running pre-flight checks
+	<span style="color:#666">[</span>WARNING IsDockerSystemdCheck<span style="color:#666">]</span>: detected <span style="color:#4070a0">&#34;cgroupfs&#34;</span> as the Docker cgroup driver. The recommended driver is <span style="color:#4070a0">&#34;systemd&#34;</span>. Please follow the guide at https://kubernetes.io/docs/setup/cri/
+<span style="color:#666">[</span>preflight<span style="color:#666">]</span> Reading configuration from the cluster...
+<span style="color:#666">[</span>preflight<span style="color:#666">]</span> FYI: You can look at this config file with <span style="color:#4070a0">&#39;kubectl -n kube-system get cm kubeadm-config -oyaml&#39;</span>
+<span style="color:#666">[</span>preflight<span style="color:#666">]</span> Running pre-flight checks before initializing the new control plane instance
+<span style="color:#666">[</span>preflight<span style="color:#666">]</span> Pulling images required <span style="color:#007020;font-weight:bold">for</span> setting up a Kubernetes cluster
+<span style="color:#666">[</span>preflight<span style="color:#666">]</span> This might take a minute or two, depending on the speed of your internet connection
+<span style="color:#666">[</span>preflight<span style="color:#666">]</span> You can also perform this action in beforehand using <span style="color:#4070a0">&#39;kubeadm config images pull&#39;</span>
+<span style="color:#666">[</span>download-certs<span style="color:#666">]</span> Downloading the certificates in Secret <span style="color:#4070a0">&#34;kubeadm-certs&#34;</span> in the <span style="color:#4070a0">&#34;kube-system&#34;</span> Namespace
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Using certificateDir folder <span style="color:#4070a0">&#34;/etc/kubernetes/pki&#34;</span>
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Generating <span style="color:#4070a0">&#34;front-proxy-client&#34;</span> certificate and key
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Generating <span style="color:#4070a0">&#34;etcd/peer&#34;</span> certificate and key
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> etcd/peer serving cert is signed <span style="color:#007020;font-weight:bold">for</span> DNS names <span style="color:#666">[</span>sd-cluster-209 localhost<span style="color:#666">]</span> and IPs <span style="color:#666">[</span>192.168.1.209 127.0.0.1 ::1<span style="color:#666">]</span>
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Generating <span style="color:#4070a0">&#34;etcd/healthcheck-client&#34;</span> certificate and key
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Generating <span style="color:#4070a0">&#34;apiserver-etcd-client&#34;</span> certificate and key
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Generating <span style="color:#4070a0">&#34;etcd/server&#34;</span> certificate and key
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> etcd/server serving cert is signed <span style="color:#007020;font-weight:bold">for</span> DNS names <span style="color:#666">[</span>sd-cluster-209 localhost<span style="color:#666">]</span> and IPs <span style="color:#666">[</span>192.168.1.209 127.0.0.1 ::1<span style="color:#666">]</span>
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Generating <span style="color:#4070a0">&#34;apiserver&#34;</span> certificate and key
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> apiserver serving cert is signed <span style="color:#007020;font-weight:bold">for</span> DNS names <span style="color:#666">[</span>sd-cluster-209 kubernetes kubernetes.default kubernetes.default.svc kubernetes.default.svc.cluster.local<span style="color:#666">]</span> and IPs <span style="color:#666">[</span>10.96.0.1 192.168.1.209 192.168.1.205<span style="color:#666">]</span>
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Generating <span style="color:#4070a0">&#34;apiserver-kubelet-client&#34;</span> certificate and key
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Valid certificates and keys now exist in <span style="color:#4070a0">&#34;/etc/kubernetes/pki&#34;</span>
+<span style="color:#666">[</span>certs<span style="color:#666">]</span> Using the existing <span style="color:#4070a0">&#34;sa&#34;</span> key
+<span style="color:#666">[</span>kubeconfig<span style="color:#666">]</span> Generating kubeconfig files
+<span style="color:#666">[</span>kubeconfig<span style="color:#666">]</span> Using kubeconfig folder <span style="color:#4070a0">&#34;/etc/kubernetes&#34;</span>
+<span style="color:#666">[</span>endpoint<span style="color:#666">]</span> WARNING: port specified in controlPlaneEndpoint overrides bindPort in the controlplane address
+<span style="color:#666">[</span>kubeconfig<span style="color:#666">]</span> Writing <span style="color:#4070a0">&#34;admin.conf&#34;</span> kubeconfig file
+<span style="color:#666">[</span>kubeconfig<span style="color:#666">]</span> Writing <span style="color:#4070a0">&#34;controller-manager.conf&#34;</span> kubeconfig file
+<span style="color:#666">[</span>kubeconfig<span style="color:#666">]</span> Writing <span style="color:#4070a0">&#34;scheduler.conf&#34;</span> kubeconfig file
+<span style="color:#666">[</span>control-plane<span style="color:#666">]</span> Using manifest folder <span style="color:#4070a0">&#34;/etc/kubernetes/manifests&#34;</span>
+<span style="color:#666">[</span>control-plane<span style="color:#666">]</span> Creating static Pod manifest <span style="color:#007020;font-weight:bold">for</span> <span style="color:#4070a0">&#34;kube-apiserver&#34;</span>
+W0828 03:12:57.996811   <span style="color:#40a070">48328</span> manifests.go:225<span style="color:#666">]</span> the default kube-apiserver authorization-mode is <span style="color:#4070a0">&#34;Node,RBAC&#34;</span>; using <span style="color:#4070a0">&#34;Node,RBAC&#34;</span>
+<span style="color:#666">[</span>control-plane<span style="color:#666">]</span> Creating static Pod manifest <span style="color:#007020;font-weight:bold">for</span> <span style="color:#4070a0">&#34;kube-controller-manager&#34;</span>
+W0828 03:12:58.009390   <span style="color:#40a070">48328</span> manifests.go:225<span style="color:#666">]</span> the default kube-apiserver authorization-mode is <span style="color:#4070a0">&#34;Node,RBAC&#34;</span>; using <span style="color:#4070a0">&#34;Node,RBAC&#34;</span>
+<span style="color:#666">[</span>control-plane<span style="color:#666">]</span> Creating static Pod manifest <span style="color:#007020;font-weight:bold">for</span> <span style="color:#4070a0">&#34;kube-scheduler&#34;</span>
+W0828 03:12:58.011318   <span style="color:#40a070">48328</span> manifests.go:225<span style="color:#666">]</span> the default kube-apiserver authorization-mode is <span style="color:#4070a0">&#34;Node,RBAC&#34;</span>; using <span style="color:#4070a0">&#34;Node,RBAC&#34;</span>
+<span style="color:#666">[</span>check-etcd<span style="color:#666">]</span> Checking that the etcd cluster is healthy
+<span style="color:#666">[</span>kubelet-start<span style="color:#666">]</span> Downloading configuration <span style="color:#007020;font-weight:bold">for</span> the kubelet from the <span style="color:#4070a0">&#34;kubelet-config-1.18&#34;</span> ConfigMap in the kube-system namespace
+<span style="color:#666">[</span>kubelet-start<span style="color:#666">]</span> Writing kubelet configuration to file <span style="color:#4070a0">&#34;/var/lib/kubelet/config.yaml&#34;</span>
+<span style="color:#666">[</span>kubelet-start<span style="color:#666">]</span> Writing kubelet environment file with flags to file <span style="color:#4070a0">&#34;/var/lib/kubelet/kubeadm-flags.env&#34;</span>
+<span style="color:#666">[</span>kubelet-start<span style="color:#666">]</span> Starting the kubelet
+<span style="color:#666">[</span>kubelet-start<span style="color:#666">]</span> Waiting <span style="color:#007020;font-weight:bold">for</span> the kubelet to perform the TLS Bootstrap...
+<span style="color:#666">[</span>etcd<span style="color:#666">]</span> Announced new etcd member joining to the existing etcd cluster
+<span style="color:#666">[</span>etcd<span style="color:#666">]</span> Creating static Pod manifest <span style="color:#007020;font-weight:bold">for</span> <span style="color:#4070a0">&#34;etcd&#34;</span>
+<span style="color:#666">[</span>etcd<span style="color:#666">]</span> Waiting <span style="color:#007020;font-weight:bold">for</span> the new etcd member to join the cluster. This can take up to 40s
+<span style="color:#666">{</span><span style="color:#4070a0">&#34;level&#34;</span>:<span style="color:#4070a0">&#34;warn&#34;</span>,<span style="color:#4070a0">&#34;ts&#34;</span>:<span style="color:#4070a0">&#34;2021-08-28T03:13:15.215-0400&#34;</span>,<span style="color:#4070a0">&#34;caller&#34;</span>:<span style="color:#4070a0">&#34;clientv3/retry_interceptor.go:61&#34;</span>,<span style="color:#4070a0">&#34;msg&#34;</span>:<span style="color:#4070a0">&#34;retrying of unary invoker failed&#34;</span>,<span style="color:#4070a0">&#34;target&#34;</span>:<span style="color:#4070a0">&#34;passthrough:///https://192.168.1.209:2379&#34;</span>,<span style="color:#4070a0">&#34;attempt&#34;</span>:0,<span style="color:#4070a0">&#34;error&#34;</span>:<span style="color:#4070a0">&#34;rpc error: code = DeadlineExceeded desc = context deadline exceeded&#34;</span><span style="color:#666">}</span>
+<span style="color:#666">[</span>upload-config<span style="color:#666">]</span> Storing the configuration used in ConfigMap <span style="color:#4070a0">&#34;kubeadm-config&#34;</span> in the <span style="color:#4070a0">&#34;kube-system&#34;</span> Namespace
+<span style="color:#666">[</span>mark-control-plane<span style="color:#666">]</span> Marking the node sd-cluster-209 as control-plane by adding the label <span style="color:#4070a0">&#34;node-role.kubernetes.io/master=&#39;&#39;&#34;</span>
+<span style="color:#666">[</span>mark-control-plane<span style="color:#666">]</span> Marking the node sd-cluster-209 as control-plane by adding the taints <span style="color:#666">[</span>node-role.kubernetes.io/master:NoSchedule<span style="color:#666">]</span>
+
+This node has joined the cluster and a new control plane instance was created:
+
+* Certificate signing request was sent to apiserver and approval was received.
+* The Kubelet was informed of the new secure connection details.
+* Control plane <span style="color:#666">(</span>master<span style="color:#666">)</span> label and taint were applied to the new node.
+* The Kubernetes control plane instances scaled up.
+* A new etcd member was added to the local/stacked etcd cluster.
+
+To start administering your cluster from this node, you need to run the following as a regular user:
+
+	mkdir -p <span style="color:#bb60d5">$HOME</span>/.kube
+	sudo cp -i /etc/kubernetes/admin.conf <span style="color:#bb60d5">$HOME</span>/.kube/config
+	sudo chown <span style="color:#007020;font-weight:bold">$(</span>id -u<span style="color:#007020;font-weight:bold">)</span>:<span style="color:#007020;font-weight:bold">$(</span>id -g<span style="color:#007020;font-weight:bold">)</span> <span style="color:#bb60d5">$HOME</span>/.kube/config
+
+Run <span style="color:#4070a0">&#39;kubectl get nodes&#39;</span> to see this node join the cluster.
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="3新node节点加入集群">3、新node节点加入集群</h3>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">kubeadm join 192.168.1.205:8443 --token abcdef.0123456789abcdef <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>    --discovery-token-ca-cert-hash sha256:7400f57a033f7527c80a4b015b54b4b6a88ccb2184ab9a6e39b709fb56e10486
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="4安装flannel网络组件">4、安装flannel网络组件</h3>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#60a0b0;font-style:italic"># wget http://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml</span>
+<span style="color:#60a0b0;font-style:italic"># sed -i &#39;s#quay.io/coreos/flannel:v0.14.0#registry.cn-shanghai.aliyuncs.com/gcr-k8s/flannel:v0.14.0#g&#39; kube-flannel.yml</span>
+<span style="color:#60a0b0;font-style:italic"># kubectl apply -f kube-flannel.yml -n kube-system</span>
+podsecuritypolicy.policy/psp.flannel.unprivileged created
+clusterrole.rbac.authorization.k8s.io/flannel created
+clusterrolebinding.rbac.authorization.k8s.io/flannel created
+serviceaccount/flannel created
+configmap/kube-flannel-cfg created
+daemonset.apps/kube-flannel-ds created
+<span style="color:#60a0b0;font-style:italic"># kubectl get pod -n kube-system |grep flannel</span>
+kube-flannel-ds-gtdl8                    1/1     Running   <span style="color:#40a070">0</span>          24s
+kube-flannel-ds-jtndz                    1/1     Running   <span style="color:#40a070">0</span>          24s
+kube-flannel-ds-nd79b                    1/1     Running   <span style="color:#40a070">0</span>          24s
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="5安装ingress">5、安装ingress</h3>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="34"><a style="outline: none; text-decoration:none; color:inherit" href="#34">34</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="35"><a style="outline: none; text-decoration:none; color:inherit" href="#35">35</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="36"><a style="outline: none; text-decoration:none; color:inherit" href="#36">36</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="37"><a style="outline: none; text-decoration:none; color:inherit" href="#37">37</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="38"><a style="outline: none; text-decoration:none; color:inherit" href="#38">38</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="39"><a style="outline: none; text-decoration:none; color:inherit" href="#39">39</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="40"><a style="outline: none; text-decoration:none; color:inherit" href="#40">40</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="41"><a style="outline: none; text-decoration:none; color:inherit" href="#41">41</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="42"><a style="outline: none; text-decoration:none; color:inherit" href="#42">42</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="43"><a style="outline: none; text-decoration:none; color:inherit" href="#43">43</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="44"><a style="outline: none; text-decoration:none; color:inherit" href="#44">44</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="45"><a style="outline: none; text-decoration:none; color:inherit" href="#45">45</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="46"><a style="outline: none; text-decoration:none; color:inherit" href="#46">46</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="47"><a style="outline: none; text-decoration:none; color:inherit" href="#47">47</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="48"><a style="outline: none; text-decoration:none; color:inherit" href="#48">48</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="49"><a style="outline: none; text-decoration:none; color:inherit" href="#49">49</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="50"><a style="outline: none; text-decoration:none; color:inherit" href="#50">50</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="51"><a style="outline: none; text-decoration:none; color:inherit" href="#51">51</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="52"><a style="outline: none; text-decoration:none; color:inherit" href="#52">52</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="53"><a style="outline: none; text-decoration:none; color:inherit" href="#53">53</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="54"><a style="outline: none; text-decoration:none; color:inherit" href="#54">54</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="55"><a style="outline: none; text-decoration:none; color:inherit" href="#55">55</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="56"><a style="outline: none; text-decoration:none; color:inherit" href="#56">56</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="57"><a style="outline: none; text-decoration:none; color:inherit" href="#57">57</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="58"><a style="outline: none; text-decoration:none; color:inherit" href="#58">58</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="59"><a style="outline: none; text-decoration:none; color:inherit" href="#59">59</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker pull registry.cn-hangzhou.aliyuncs.com/google_containers/nginx-ingress-controller:v0.48.1
+
+wget https://github.com/kubernetes/ingress-nginx/releases/download/helm-chart-3.35.0/ingress-nginx-3.35.0.tgz
+tar zxvf helm-chart-3.35.0.tar.gz
+<span style="color:#007020">cd</span> ingress-nginx
+vim values.yaml  <span style="color:#60a0b0;font-style:italic">#更新镜像为上面的国内阿里镜像版本</span>
+
+<span style="color:#60a0b0;font-style:italic">#helm install ingress-nginx --namespace ingress-nginx  . -n ingress-nginx</span>
+NAME: ingress-nginx
+LAST DEPLOYED: Tue Aug <span style="color:#40a070">31</span> 17:02:28 <span style="color:#40a070">2021</span>
+NAMESPACE: ingress-nginx
+STATUS: deployed
+REVISION: <span style="color:#40a070">1</span>
+TEST SUITE: None
+NOTES:
+The ingress-nginx controller has been installed.
+Get the application URL by running these commands:
+  <span style="color:#007020">export</span> <span style="color:#bb60d5">HTTP_NODE_PORT</span><span style="color:#666">=</span><span style="color:#007020;font-weight:bold">$(</span>kubectl --namespace ingress-nginx get services -o <span style="color:#bb60d5">jsonpath</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;{.spec.ports[0].nodePort}&#34;</span> ingress-nginx-controller<span style="color:#007020;font-weight:bold">)</span>
+  <span style="color:#007020">export</span> <span style="color:#bb60d5">HTTPS_NODE_PORT</span><span style="color:#666">=</span><span style="color:#007020;font-weight:bold">$(</span>kubectl --namespace ingress-nginx get services -o <span style="color:#bb60d5">jsonpath</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;{.spec.ports[1].nodePort}&#34;</span> ingress-nginx-controller<span style="color:#007020;font-weight:bold">)</span>
+  <span style="color:#007020">export</span> <span style="color:#bb60d5">NODE_IP</span><span style="color:#666">=</span><span style="color:#007020;font-weight:bold">$(</span>kubectl --namespace ingress-nginx get nodes -o <span style="color:#bb60d5">jsonpath</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;{.items[0].status.addresses[1].address}&#34;</span><span style="color:#007020;font-weight:bold">)</span>
+
+  <span style="color:#007020">echo</span> <span style="color:#4070a0">&#34;Visit http://</span><span style="color:#bb60d5">$NODE_IP</span><span style="color:#4070a0">:</span><span style="color:#bb60d5">$HTTP_NODE_PORT</span><span style="color:#4070a0"> to access your application via HTTP.&#34;</span>
+  <span style="color:#007020">echo</span> <span style="color:#4070a0">&#34;Visit https://</span><span style="color:#bb60d5">$NODE_IP</span><span style="color:#4070a0">:</span><span style="color:#bb60d5">$HTTPS_NODE_PORT</span><span style="color:#4070a0"> to access your application via HTTPS.&#34;</span>
+
+An example Ingress that makes use of the controller:
+
+  apiVersion: networking.k8s.io/v1beta1
+  kind: Ingress
+  metadata:
+    annotations:
+      kubernetes.io/ingress.class: nginx
+    name: example
+    namespace: foo
+  spec:
+    rules:
+      - host: www.example.com
+        http:
+          paths:
+            - backend:
+                serviceName: exampleService
+                servicePort: <span style="color:#40a070">80</span>
+              path: /
+    <span style="color:#60a0b0;font-style:italic"># This section is only required if TLS is to be enabled for the Ingress</span>
+    tls:
+        - hosts:
+            - www.example.com
+          secretName: example-tls
+
+If TLS is enabled <span style="color:#007020;font-weight:bold">for</span> the Ingress, a Secret containing the certificate and key must also be provided:
+
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: example-tls
+    namespace: foo
+  data:
+    tls.crt: &lt;base64 encoded cert&gt;
+    tls.key: &lt;base64 encoded key&gt;
+  type: kubernetes.io/tls
+</code></pre></td></tr></table>
+</div>
+</div><p>对于新建Ingress参考如下设置：</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-nginx
+spec:
+  rules:
+    - host: <span style="color:#4070a0">&#34;my-nginx.test.com&#34;</span>
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: my-nginx
+              servicePort: <span style="color:#40a070">8080</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>至此，kubeadm部署kubernetes高可用集群完成</p>
+
+        </div>
+
+        
+        
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">wanzi</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+      2021-08-15
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+
+        
+        
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+    
+  </div>
+</div>
+
+
+        <footer class="post-footer">
+          <div class="post-tags">
+              <a href="https://wnote.com/tags/kubeadm/">kubeadm</a>
+                <a href="https://wnote.com/tags/k8s/">k8s</a>
+                <a href="https://wnote.com/tags/haproxy/">haproxy</a>
+                <a href="https://wnote.com/tags/keepalived/">keepalived</a>
+                
+            </div>
+
+
+          
+          <nav class="post-nav">
+            
+              <a class="prev" href="/post/kubernetes-gpushare-aliyun/">
+                
+                <i class="iconfont">
+                  <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+                </i>
+                <span class="prev-text nav-default">阿里云共享GPU方案测试</span>
+                <span class="prev-text nav-mobile">上一篇</span>
+              </a>
+            
+              <a class="next" href="/post/linux-dns-privatezone-bind9-dnsmasq/">
+                <span class="next-text nav-default">阿里云PrivateZone&#43;Bind9&#43;Dnsmasq实现内部DNS</span>
+                <span class="prev-text nav-mobile">下一篇</span>
+                
+                <i class="iconfont">
+                  <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+                </i>
+              </a>
+          </nav>
+        </footer>
+      </article>
+
+      
+      
+        
+      
+
+
+      
+      
+
+  
+
+  
+  
+    <div class="post">
+  <script
+    src="https://giscus.app/client.js"
+    data-repo="wzgogo/wanzi"
+    data-repo-id="MDEwOlJlcG9zaXRvcnkzNTc1MjI0MTQ="
+    data-category="Announcements"
+    data-category-id="DIC_kwDOFU9b7s4CSycO"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="light"
+    data-lang="zh-CN"
+    
+      data-loading="lazy"
+    
+    crossorigin="anonymous"
+    async
+  ></script>
+</div>
+
+  
+
+  
+  
+
+  
+
+  
+
+    
+
+  
+
+  
+
+
+    </div>
+
+    
+    <nav class="toc" id="toc">
+    <div class="toc-title">文章目录</div>
+    <div class="toc-content custom-scrollbar">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#一基本环境设置">一、基本环境设置</a>
+      <ul>
+        <li><a href="#1安装docker并增加hosts">1、安装docker并增加hosts</a></li>
+        <li><a href="#2配置hosts">2、配置hosts</a></li>
+        <li><a href="#3禁用防火墙并设置selinux">3、禁用防火墙并设置selinux</a></li>
+        <li><a href="#4关闭swap">4、关闭swap</a></li>
+        <li><a href="#5安装所有节点的kubeadm和kubeletipvsadm">5、安装所有节点的kubeadm和kubelet、ipvsadm</a></li>
+      </ul>
+    </li>
+    <li><a href="#二keepalived配合haproxy实现负载均衡器高可用">二、keepalived配合haproxy实现负载均衡器高可用</a>
+      <ul>
+        <li><a href="#1keepalived配置">1、keepalived配置</a></li>
+        <li><a href="#2haproxy配置">2、haproxy配置</a></li>
+      </ul>
+    </li>
+    <li><a href="#三kubeadm初始化k8s集群">三、kubeadm初始化k8s集群</a>
+      <ul>
+        <li><a href="#1初始化第一台master">1、初始化第一台master</a></li>
+        <li><a href="#2新master节点加入集群">2、新master节点加入集群</a></li>
+        <li><a href="#3新node节点加入集群">3、新node节点加入集群</a></li>
+        <li><a href="#4安装flannel网络组件">4、安装flannel网络组件</a></li>
+        <li><a href="#5安装ingress">5、安装ingress</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+  </nav>
+
+
+  </div>
+
+      </main>
+
+      <footer id="footer" class="footer">
+        <div class="icon-links">
+  
+  
+    <a href="https://github.com/wzgogo" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+  
+    <a href="https://www.zhihu.com/people/bijiq" rel="me noopener" class="iconfont"
+      title="zhihu"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M351.791182 562.469462l192.945407 0c0-45.367257-21.3871-71.939449-21.3871-71.939449L355.897709 490.530013c3.977591-82.182744 7.541767-187.659007 8.816806-226.835262l159.282726 0c0 0-0.86367-67.402109-18.578124-67.402109s-279.979646 0-279.979646 0 16.850783-88.141456 39.318494-127.053698c0 0-83.60514-4.510734-112.121614 106.962104S81.344656 355.077018 76.80834 367.390461c-4.536316 12.313443 24.62791 5.832845 36.941354 0 12.313443-5.832845 68.050885-25.924439 84.252893-103.69571l86.570681 0c1.165546 49.28652 4.596691 200.335724 3.515057 226.835262L109.86113 490.530013c-25.275663 18.147312-33.701566 71.939449-33.701566 71.939449L279.868105 562.469462c-8.497535 56.255235-23.417339 128.763642-44.275389 167.210279-33.05279 60.921511-50.55235 116.65793-169.802314 212.576513 0 0-19.442818 14.257725 40.829917 9.073656 60.273758-5.185093 117.305683-20.739347 156.840094-99.807147 20.553105-41.107233 41.805128-93.250824 58.386782-146.138358l-0.055259 0.185218 167.855986 193.263655c0 0 22.035876-51.847855 5.832845-108.880803L371.045711 650.610918l-42.1244 31.157627-0.045025 0.151449c11.69946-41.020252 20.11206-81.5749 22.726607-116.858498C351.665315 564.212152 351.72876 563.345412 351.791182 562.469462z"></path>
+  <path d="M584.918753 182.033893l0 668.840094 70.318532 0 28.807093 80.512708 121.875768-80.512708 153.600307 0L959.520453 182.033893 584.918753 182.033893zM887.150192 778.934538l-79.837326 0-99.578949 65.782216-23.537066-65.782216-24.855084 0L659.341766 256.673847l227.807403 0L887.149169 778.934538z"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://wnote.com/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+  
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2018 -
+    2023
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        丸子有记
+        
+      </span></span>
+
+  
+  
+
+  
+    <span>
+      <a href="https://www.foreverblog.cn/" target="_blank" > <img src="https://img.foreverblog.cn/logo_en_default.png" alt="" style="width:auto;height:16px;"> </a>|<a href="https://beian.miit.gov.cn" target="_blank">京ICP备2021004162号-1</a>
+    </span>
+  
+</div>
+
+      </footer>
+
+      <div class="button__back-to-top">
+        <a href="#back-to-top">
+          <i class="iconfont">
+            
+            <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+          </i>
+        </a>
+      </div>
+    </div>
+    
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.44aac06f997857a132df295f595d9c55336473784fc93fcb8c57b715abe23b00.js" integrity="sha256-RKrAb5l4V6Ey3ylfWV2cVTNkc3hPyT/LjFe3FaviOwA=" crossorigin="anonymous"></script>
+
+
+
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>keepalived on 丸子有记</title>
+    <link>https://wnote.com/tags/keepalived/</link>
+    <description>Recent content in keepalived on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Sat, 11 Sep 2021 17:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/keepalived/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>制定kubernetes集群备份策略</title>
+      <link>https://wnote.com/post/kubernetes-velero-etcd-backup/</link>
+      <pubDate>Sat, 11 Sep 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-velero-etcd-backup/</guid>
+      <description>对于备份，每家互联网公司技术人员都要去做的一件事儿，当然我们也不例外，今天我主要针对生产环境kubernetes集群制定一些自己的策略，这里</description>
+    </item>
+    
+    <item>
+      <title>kubeadm部署高可用kubernetes集群</title>
+      <link>https://wnote.com/post/kubernetes-kubeadm-haproxy-keepalived-deploy/</link>
+      <pubDate>Sun, 15 Aug 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-kubeadm-haproxy-keepalived-deploy/</guid>
+      <description>为了后便后期验证私有化部署 ，最近内网环境需要快速搭建一套k8s集群，由于之前对于规模比较大的集群，我一般采用kubeasz和kubespra</description>
+    </item>
+    
+  </channel>
+</rss>

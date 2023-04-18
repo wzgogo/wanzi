@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>goland on 丸子有记</title>
+    <link>https://wnote.com/tags/goland/</link>
+    <description>Recent content in goland on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Wed, 15 Mar 2023 16:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/goland/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Delve版本过低无法适配Goland</title>
+      <link>https://wnote.com/post/tools-goland-delve-err/</link>
+      <pubDate>Wed, 15 Mar 2023 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/tools-goland-delve-err/</guid>
+      <description>问题 Goland下最近调试代码，总是报如下错误： 1 WARNING:undefined behavior - version of Delve is too old for Go version 1.19.3 (maximum supported version 1.18) 解决方法 问题的大概的意思是Delve版本过低，无法满足当</description>
+    </item>
+    
+  </channel>
+</rss>

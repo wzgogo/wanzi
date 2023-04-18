@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>aliyun on 丸子有记</title>
+    <link>https://wnote.com/tags/aliyun/</link>
+    <description>Recent content in aliyun on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Mon, 08 Nov 2021 17:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/aliyun/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>解决k8s下nginx文件上传限制和504网关超时</title>
+      <link>https://wnote.com/post/kubernetes-nginx-ingress-504/</link>
+      <pubDate>Mon, 08 Nov 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-nginx-ingress-504/</guid>
+      <description>最近业务使用k8s集群经常有两个问题需要解决，这里记录一下： 前端页面上传文件1M限制 前端页面发送POST请求到后端，出现504超时 第一个问题</description>
+    </item>
+    
+    <item>
+      <title>阿里云ACK同时支持公网和内网SLB</title>
+      <link>https://wnote.com/post/kubernetes-aliyun-ingress-slb-intranet/</link>
+      <pubDate>Thu, 21 Oct 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-aliyun-ingress-slb-intranet/</guid>
+      <description>一、背景 有一套ACK集群 成功部署Nginx ingress controller并绑定了公网SLB 注意：通过阿里云容器服务管理控制台创建的Kubernete</description>
+    </item>
+    
+    <item>
+      <title>阿里云共享GPU方案测试</title>
+      <link>https://wnote.com/post/kubernetes-gpushare-aliyun/</link>
+      <pubDate>Tue, 31 Aug 2021 14:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-gpushare-aliyun/</guid>
+      <description>一、k8s部署GPU共享插件 部署之前需要确保k8s节点上已安装nvidia-driver和nvidia-docker，同时已将docker默</description>
+    </item>
+    
+    <item>
+      <title>阿里云PrivateZone&#43;Bind9&#43;Dnsmasq实现内部DNS</title>
+      <link>https://wnote.com/post/linux-dns-privatezone-bind9-dnsmasq/</link>
+      <pubDate>Sat, 10 Jul 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/linux-dns-privatezone-bind9-dnsmasq/</guid>
+      <description>需求： 阿里云集群能够解析内部域名 办公网解析内部域名+办公网上网解析 解决方法： 对于第一个问题，直接使用阿里云PrivateZone解析即可 对于</description>
+    </item>
+    
+    <item>
+      <title>terraform自动化创建ECS</title>
+      <link>https://wnote.com/post/devops-terraform-create-aliyun-ecs/</link>
+      <pubDate>Fri, 26 Feb 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/devops-terraform-create-aliyun-ecs/</guid>
+      <description>快速创建一台阿里云ECS主机 指定terraform版本 这里我们指定了阿里云provider版本信息，并设置了terraform的版本要求 1 2</description>
+    </item>
+    
+    <item>
+      <title>terraform安装与命令详解</title>
+      <link>https://wnote.com/post/devops-terraform-command-detail/</link>
+      <pubDate>Thu, 25 Feb 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/devops-terraform-command-detail/</guid>
+      <description>安装Terraform Mac系统安装 1 2 brew tap hashicorp/tap brew install hashicorp/tap/terraform Linux系统安装 ubuntu安装 1 2 3 curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add - sudo apt-add-repository &amp;#34;deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs)main&amp;#34; sudo apt-get update &amp;amp;&amp;amp; sudo apt-get install terraform c</description>
+    </item>
+    
+    <item>
+      <title>自动化编排工具Terraform介绍</title>
+      <link>https://wnote.com/post/devops-terraform-about/</link>
+      <pubDate>Wed, 24 Feb 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/devops-terraform-about/</guid>
+      <description>Terraform是什么？： Terraform是由HashiCorp公司在2014年左右推出的开源资源编排工具, 目前几乎所有的主流云服务商都</description>
+    </item>
+    
+  </channel>
+</rss>

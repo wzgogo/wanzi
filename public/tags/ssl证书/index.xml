@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>SSL证书 on 丸子有记</title>
+    <link>https://wnote.com/tags/ssl%E8%AF%81%E4%B9%A6/</link>
+    <description>Recent content in SSL证书 on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Sat, 12 Nov 2022 16:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/ssl%E8%AF%81%E4%B9%A6/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>给博客自动续签免费SSL证书</title>
+      <link>https://wnote.com/post/tools-ssl-renew-acme/</link>
+      <pubDate>Sat, 12 Nov 2022 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/tools-ssl-renew-acme/</guid>
+      <description>背景 如果你拥有一个网站或者独立博客，你每年都需要关心自己网站SSL证书过期问题，最近wnote.com证书也快过期了； 申请SSL证书，既让网</description>
+    </item>
+    
+  </channel>
+</rss>

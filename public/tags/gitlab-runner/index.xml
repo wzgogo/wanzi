@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>gitlab-runner on 丸子有记</title>
+    <link>https://wnote.com/tags/gitlab-runner/</link>
+    <description>Recent content in gitlab-runner on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Fri, 26 Mar 2021 17:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/gitlab-runner/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Gitlab runner配置ceph s3</title>
+      <link>https://wnote.com/post/cicd-gitlab-runner-ceph-s3/</link>
+      <pubDate>Fri, 26 Mar 2021 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/cicd-gitlab-runner-ceph-s3/</guid>
+      <description>对于前端项目Npm构建的时候，经常拉取前端库耗时比较长，另外不同的job之间复用也是一个问题，无论是artifacts或者cache最终我们</description>
+    </item>
+    
+    <item>
+      <title>基于K8S部署gitlab-runner</title>
+      <link>https://wnote.com/post/cicd-gitlab-k8s-gitlabrunner/</link>
+      <pubDate>Thu, 14 Nov 2019 17:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/cicd-gitlab-k8s-gitlabrunner/</guid>
+      <description>部署gitlab-runner 这里基于helm部署，参考：https://gitlab.com/gitlab-org/charts/gitl</description>
+    </item>
+    
+  </channel>
+</rss>

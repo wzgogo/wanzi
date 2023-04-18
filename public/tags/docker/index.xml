@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>docker on 丸子有记</title>
+    <link>https://wnote.com/tags/docker/</link>
+    <description>Recent content in docker on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Thu, 13 Apr 2023 18:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>kind构建轻量级kubernetes集群</title>
+      <link>https://wnote.com/post/kubernetes-kind-build-clusters/</link>
+      <pubDate>Thu, 13 Apr 2023 18:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-kind-build-clusters/</guid>
+      <description>最近在复习Golang，写了一个web应用，本地跑通以后想在k8s集群测试一番，苦于机器配置原因， 搭建一套完整的k8s集群还是有一些力不从心</description>
+    </item>
+    
+    <item>
+      <title>自定义Jenkins Agent集成docker和kubectl工具</title>
+      <link>https://wnote.com/post/cicd-jenkins-agent-docker-kubectl-helm/</link>
+      <pubDate>Wed, 22 Mar 2023 18:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/cicd-jenkins-agent-docker-kubectl-helm/</guid>
+      <description>由于我们Jenkins构建的时候，官方提供的jenkins-agent没有我们使用的工具，比如helm，kubectl，curl，argoc</description>
+    </item>
+    
+    <item>
+      <title>Dockerfile多阶段构建</title>
+      <link>https://wnote.com/post/docker-dockerfile-multi-stage/</link>
+      <pubDate>Mon, 02 Jul 2018 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/docker-dockerfile-multi-stage/</guid>
+      <description>Docker多阶段构建理解: 构建镜像需要有一个基础镜像,后续操作就会基于该基础镜像构建 docker镜像文件里有层级概念,每执行一次RUN指令</description>
+    </item>
+    
+    <item>
+      <title>Dockerfile语法详情</title>
+      <link>https://wnote.com/post/docker-dockerfile-details/</link>
+      <pubDate>Thu, 21 Jun 2018 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/docker-dockerfile-details/</guid>
+      <description>FROM 指定构建镜像使用的基础镜像,FROM必须是Dockerfile中非注释行的第一个指令,如果本地没有指定的镜像，则会自动从Docker的公共</description>
+    </item>
+    
+    <item>
+      <title>Docker基础命令</title>
+      <link>https://wnote.com/post/docker-commands-base/</link>
+      <pubDate>Wed, 20 Jun 2018 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/docker-commands-base/</guid>
+      <description>常用命令 1 2 3 4 5 6 7 8 docker info #查看本地docker信息 docker search openresty #搜索远程镜像仓库 docker images #查看当前系统镜像仓库镜像 docker ps #查看当前正在运行容器 docker pull centos</description>
+    </item>
+    
+  </channel>
+</rss>

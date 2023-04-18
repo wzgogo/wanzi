@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html
+  lang="zh-cn"
+  itemscope
+  itemtype="http://schema.org/WebPage"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>
+          制定kubernetes集群备份策略 - 丸子有记
+        </title>
+    
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="wanzi" /><meta name="description" content="制定kubernetes集群备份策略" />
+
+  <meta name="keywords" content="丸子有记, 运维, devops, sre, 运维架构, 运维开发, go语言, python" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="https://wnote.com/post/kubernetes-velero-etcd-backup/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.d8d87b982993a745e5e7b6a6cbf257be8c3e82aab5e485f0908ad7e6c3501ab2.css" integrity="sha256-2Nh7mCmTp0Xl57amy/JXvow&#43;gqq15IXwkIrX5sNQGrI=" media="screen" crossorigin="anonymous">
+
+
+
+<style>
+  .wallpaper {
+    background-image: url('/static/img/wallpaper.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+  }
+</style>
+
+
+
+
+<meta property="og:title" content="制定kubernetes集群备份策略" />
+<meta property="og:description" content="制定kubernetes集群备份策略" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://wnote.com/post/kubernetes-velero-etcd-backup/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-09-11T17:22:42+08:00" />
+<meta property="article:modified_time" content="2021-09-11T17:22:42+08:00" />
+
+<meta itemprop="name" content="制定kubernetes集群备份策略">
+<meta itemprop="description" content="制定kubernetes集群备份策略"><meta itemprop="datePublished" content="2021-09-11T17:22:42+08:00" />
+<meta itemprop="dateModified" content="2021-09-11T17:22:42+08:00" />
+<meta itemprop="wordCount" content="2993">
+<meta itemprop="keywords" content="velero,k8s,备份,keepalived," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="制定kubernetes集群备份策略"/>
+<meta name="twitter:description" content="制定kubernetes集群备份策略"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+  </head>
+  <body>
+    <div id="back-to-top"></div>
+
+    <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">丸子有记</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/">主页</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/post/">归档</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/tags/">标签</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/categories/">分类</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/notes/">笔记</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/about/">关于</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+    
+      
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+    
+
+    
+      
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = '5463c477db2c64c03';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+    
+
+    
+
+
+    <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      丸子有记
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/">主页</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/post/">归档</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/tags/">标签</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/categories/">分类</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/notes/">笔记</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wnote.com/about/">关于</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+    </header>
+
+    <div id="mobile-panel">
+      <main id="main" class="main bg-llight wallpaper">
+        <div class="content-wrapper">
+    <div id="content" class="content">
+      <article class="post">
+        
+        <header class="post-header">
+          <h1 class="post-title">制定kubernetes集群备份策略</h1>
+          
+
+          <div class="post-meta">
+  <div class="post-meta-author">
+    by
+      <a href="/about">
+        <span class="post-meta-author-name">
+          wanzi
+        </span>
+      </a>
+    
+  </div>
+
+  <div class="post-meta-time">
+    <time datetime="2021-09-11">
+      2021-09-11
+    </time>
+  </div>
+
+  
+
+
+  <div class="post-meta__right">
+    <span class="post-meta-more">
+        约 2993 字 -
+        预计阅读 6 分钟
+      </span>
+
+    <div class="post-meta-category">
+        <a href="https://wnote.com/categories/kubernetes/"> kubernetes </a>
+          
+      </div>
+
+
+    
+    
+
+
+    
+    
+  </div>
+</div>
+
+        </header>
+
+        
+        <div class="post-content">
+          <p>对于备份，每家互联网公司技术人员都要去做的一件事儿，当然我们也不例外，今天我主要针对生产环境kubernetes集群制定一些自己的策略，这里分享给大家。</p>
+<p>我这里kubernetes备份目的主要为了防止如下情况出现：</p>
+<ul>
+<li>防止误操作删除集群中某一个namespace</li>
+<li>防止误操作导致集群中某一个资源出现异常，比如deployment、configmap等</li>
+<li>防止误操作删除集群部分资源对象</li>
+<li>防止etcd数据丢失</li>
+</ul>
+<h2 id="备份etcd">备份ETCD</h2>
+<p>备份etcd，防止k8s集群出现了集群级别故障或etcd数据丢失情况，导致整个集群不可用的情况，这种情况只能通过恢复集群恢复业务。</p>
+<p>备份etcd脚本如下：</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#007020">#!/bin/bash
+</span><span style="color:#007020"></span><span style="color:#60a0b0;font-style:italic">#ENDPOINTS=&#34;https://192.168.1.207:2379,https://192.168.1.208:2379,https://192.168.1.209:2379&#34;</span>
+<span style="color:#bb60d5">ENDPOINTS</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;127.0.0.1:2379&#34;</span>
+<span style="color:#bb60d5">CACERT</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;/etc/kubernetes/pki/etcd/ca.crt&#34;</span>
+<span style="color:#bb60d5">CERT</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;/etc/kubernetes/pki/etcd/server.crt&#34;</span>
+<span style="color:#bb60d5">KEY</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;/etc/kubernetes/pki/etcd/server.key&#34;</span>
+<span style="color:#bb60d5">DATE</span><span style="color:#666">=</span><span style="color:#4070a0">`</span>date +%Y%m%d-%H%M%S<span style="color:#4070a0">`</span>
+<span style="color:#bb60d5">BACKUP_DIR</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;/home/centos/hostpath/backups/k8s/etcd&#34;</span>
+<span style="color:#bb60d5">ETCDCTL_API</span><span style="color:#666">=</span><span style="color:#40a070">3</span> /usr/local/bin/etcdctl --cacert<span style="color:#666">=</span><span style="color:#70a0d0;font-style:italic">${</span><span style="color:#bb60d5">CACERT</span><span style="color:#70a0d0;font-style:italic">}</span> --cert<span style="color:#666">=</span><span style="color:#70a0d0;font-style:italic">${</span><span style="color:#bb60d5">CERT</span><span style="color:#70a0d0;font-style:italic">}</span> --key<span style="color:#666">=</span><span style="color:#70a0d0;font-style:italic">${</span><span style="color:#bb60d5">KEY</span><span style="color:#70a0d0;font-style:italic">}</span>  --endpoints<span style="color:#666">=</span><span style="color:#4070a0">&#34;</span><span style="color:#70a0d0;font-style:italic">${</span><span style="color:#bb60d5">ENDPOINTS</span><span style="color:#70a0d0;font-style:italic">}</span><span style="color:#4070a0">&#34;</span> snapshot save <span style="color:#70a0d0;font-style:italic">${</span><span style="color:#bb60d5">BACKUP_DIR</span><span style="color:#70a0d0;font-style:italic">}</span>/k8s-snapshot-<span style="color:#70a0d0;font-style:italic">${</span><span style="color:#bb60d5">DATE</span><span style="color:#70a0d0;font-style:italic">}</span>.db
+find  <span style="color:#bb60d5">$BACKUP_DIR</span>/ -type f -mtime +20 -exec rm -f <span style="color:#666">{}</span> <span style="color:#4070a0;font-weight:bold">\;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>cron任务计划：</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#40a070">50</span><span style="color:#bbb"> </span><span style="color:#40a070">21</span><span style="color:#bbb"> </span>*<span style="color:#bbb"> </span>*<span style="color:#bbb"> </span>*<span style="color:#bbb"> </span>/bin/bash /home/centos/hostpath/backups/k8s/etcdv3-bak.sh<span style="color:#bbb">
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id="minio对象存储服务搭建">minio对象存储服务搭建</h2>
+<p>由于我们的存储集群采用的GlusterFS搭建，因此，这里我只能使用minio搭建对象存储，底层采用GlusterFS文件系统；如果你使用阿里云OSS备份你集群资源，请忽略这一步，可以移驾：https://github.com/AliyunContainerService/velero-plugin</p>
+<p>由于minio在k8s环境下搭建需要提供对应存储pv/pvc，这里为了简单，直接启动docker方式：</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#062873;font-weight:bold">version</span>:<span style="color:#bbb"> </span><span style="color:#4070a0">&#39;2.0&#39;</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">services</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">minio</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">image</span>:<span style="color:#bbb"> </span>minio/minio:latest<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">container_name</span>:<span style="color:#bbb"> </span>minio<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">ports</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">      </span>- <span style="color:#4070a0">&#34;39000:9000&#34;</span><span style="color:#bbb">
+</span><span style="color:#bbb">      </span>- <span style="color:#4070a0">&#34;39001:9001&#34;</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">restart</span>:<span style="color:#bbb"> </span>always<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">command</span>:<span style="color:#bbb"> </span>server --console-address &#39;:9001&#39; /data<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">environment</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">      </span><span style="color:#062873;font-weight:bold">MINIO_ACCESS_KEY</span>:<span style="color:#bbb"> </span>admin<span style="color:#bbb">
+</span><span style="color:#bbb">      </span><span style="color:#062873;font-weight:bold">MINIO_SECRET_KEY</span>:<span style="color:#bbb"> </span>adminSD#123<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">logging</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">      </span><span style="color:#062873;font-weight:bold">options</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">        </span><span style="color:#062873;font-weight:bold">max-size</span>:<span style="color:#bbb"> </span><span style="color:#4070a0">&#34;1000M&#34;</span><span style="color:#bbb"> </span><span style="color:#60a0b0;font-style:italic"># 最大文件上传限制</span><span style="color:#bbb">
+</span><span style="color:#bbb">        </span><span style="color:#062873;font-weight:bold">max-file</span>:<span style="color:#bbb"> </span><span style="color:#4070a0">&#34;100&#34;</span><span style="color:#bbb">
+</span><span style="color:#bbb">      </span><span style="color:#062873;font-weight:bold">driver</span>:<span style="color:#bbb"> </span>json-file<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">volumes</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">      </span>- /home/centos/hostpath/backups/k8s/velero:/data<span style="color:#bbb"> </span><span style="color:#60a0b0;font-style:italic"># 映射文件路径</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">networks</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">      </span>- minio<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">networks</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">minio</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">ipam</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">      </span><span style="color:#062873;font-weight:bold">config</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">      </span>- <span style="color:#062873;font-weight:bold">subnet</span>:<span style="color:#bbb"> </span><span style="color:#40a070">10.210.1.0</span>/24<span style="color:#bbb">
+</span><span style="color:#bbb">        </span><span style="color:#062873;font-weight:bold">gateway</span>:<span style="color:#bbb"> </span><span style="color:#40a070">10.210.1.1</span><span style="color:#bbb">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>打开浏览器输入如下地址和账户信息，就可以通过web控制台管理minio对象存储了</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">minio web：http://192.168.1.214:39001
+minio admin：admin
+minio admin passwd：adminSD#123
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="velero备份之安装客户端">velero备份之安装客户端</h2>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">brew install velero
+</code></pre></td></tr></table>
+</div>
+</div><p>创建文件credentials-velero内容如下,方便后边创建velero server端连接对象存储使用：</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">[default]<span style="color:#bbb">
+</span><span style="color:#bbb"></span>aws_access_key_id = admin<span style="color:#bbb">
+</span><span style="color:#bbb"></span>aws_secret_access_key = adminSD#123<span style="color:#bbb">
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id="velero备份之k8s部署velero">velero备份之k8s部署velero</h2>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5">5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6">6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7">7</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#60a0b0;font-style:italic"># velero install \</span>
+    --provider aws <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>    --plugins velero/velero-plugin-for-aws:v1.2.0 <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>    --bucket k8s-jf <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>    --secret-file ./credentials-velero <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>    --use-volume-snapshots<span style="color:#666">=</span><span style="color:#007020">false</span> <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>    --backup-location-config <span style="color:#bb60d5">region</span><span style="color:#666">=</span>minio,s3ForcePathStyle<span style="color:#666">=</span><span style="color:#4070a0">&#34;true&#34;</span>,s3Url<span style="color:#666">=</span>http://192.168.1.214:39000
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="velero备份之velero命令">velero备份之velero命令</h2>
+<h3 id="备份查看删除操作">备份,查看,删除操作</h3>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#60a0b0;font-style:italic">#备份集群ingress-nginx namespace下资源:</span>
+velero backup create ingress-nginx-backup --include-namespaces ingress-nginx
+
+<span style="color:#60a0b0;font-style:italic">#查看备份结果</span>
+velero backup describe ingress-nginx-backup
+velero backup logs ingress-nginx-backup
+
+<span style="color:#60a0b0;font-style:italic">#删除备份</span>
+velero delete backup ingress-nginx-backup
+
+<span style="color:#60a0b0;font-style:italic">#备份非ingress-nginx和test命名空间下的资源：</span>
+velero backup create k8s-full-test-backup --exclude-namespaces ingress-nginx,test
+
+<span style="color:#60a0b0;font-style:italic">#备份特定资源类型</span>
+velero backup create kube-system-backup --include-resources pod,secret
+
+<span style="color:#60a0b0;font-style:italic">#--confirm 直接删除备份，无需确认：</span>
+velero backup delete kube-system-backup --confirm
+
+<span style="color:#60a0b0;font-style:italic">#备份带pv pod</span>
+velero backup create pvc-backup  --snapshot-volumes --include-namespaces test-velero
+</code></pre></td></tr></table>
+</div>
+</div><p>注意：</p>
+<ul>
+<li>&ndash;include-resources备份指定资源类型, &ndash;exclude-resources指定排除某些资源类型</li>
+</ul>
+<h3 id="定时备份">定时备份：</h3>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#60a0b0;font-style:italic"># 每六个小时备份一次</span>
+velero create schedule <span style="color:#70a0d0;font-style:italic">${</span><span style="color:#bb60d5">SCHEDULE_NAME</span><span style="color:#70a0d0;font-style:italic">}</span> --schedule<span style="color:#666">=</span><span style="color:#4070a0">&#34;0 */6 * * *&#34;</span>
+
+<span style="color:#60a0b0;font-style:italic"># 每六个小时使用every备份一次</span>
+velero create schedule <span style="color:#70a0d0;font-style:italic">${</span><span style="color:#bb60d5">SCHEDULE_NAME</span><span style="color:#70a0d0;font-style:italic">}</span> --schedule<span style="color:#666">=</span><span style="color:#4070a0">&#34;@every 6h&#34;</span>
+
+<span style="color:#60a0b0;font-style:italic"># 创建一个web命名空间的天备份</span>
+velero create schedule <span style="color:#70a0d0;font-style:italic">${</span><span style="color:#bb60d5">SCHEDULE_NAME</span><span style="color:#70a0d0;font-style:italic">}</span> --schedule<span style="color:#666">=</span><span style="color:#4070a0">&#34;@every 24h&#34;</span> --include-namespaces web
+
+<span style="color:#60a0b0;font-style:italic"># 创建一个周备份，持续时间为90天。</span>
+velero create schedule <span style="color:#70a0d0;font-style:italic">${</span><span style="color:#bb60d5">SCHEDULE_NAME</span><span style="color:#70a0d0;font-style:italic">}</span> --schedule<span style="color:#666">=</span><span style="color:#4070a0">&#34;@every 168h&#34;</span> --ttl 2160h0m0s
+</code></pre></td></tr></table>
+</div>
+</div><p>说明：&ndash;ttl可以指定backup的生存周期，在ttl超时后，backup会被定期清理,ttl默认30天</p>
+<h3 id="备份恢复">备份恢复：</h3>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#60a0b0;font-style:italic">#从backup创建restore</span>
+velero restore create <span style="color:#70a0d0;font-style:italic">${</span><span style="color:#bb60d5">RESTORE_NAME</span><span style="color:#70a0d0;font-style:italic">}</span> --from-backup <span style="color:#70a0d0;font-style:italic">${</span><span style="color:#bb60d5">BACKUP_NAME</span><span style="color:#70a0d0;font-style:italic">}</span>
+
+<span style="color:#60a0b0;font-style:italic"># 从backup创建restore，restore默认名为 ${BACKUP_NAME}-&lt;timestamp&gt;</span>
+velero restore create --from-backup <span style="color:#70a0d0;font-style:italic">${</span><span style="color:#bb60d5">BACKUP_NAME</span><span style="color:#70a0d0;font-style:italic">}</span>
+
+<span style="color:#60a0b0;font-style:italic"># 从schedule最新一次的backup创建restore</span>
+velero restore create --from-schedule <span style="color:#70a0d0;font-style:italic">${</span><span style="color:#bb60d5">SCHEDULE_NAME</span><span style="color:#70a0d0;font-style:italic">}</span>
+
+<span style="color:#60a0b0;font-style:italic"># 指定backup中的某些资源创建restore</span>
+velero restore create --from-backup backup-2 --include-resources pod,secret
+
+<span style="color:#60a0b0;font-style:italic"># 恢复集群所有备份，（对已经存在的服务不会覆盖）</span>
+velero restore create --from-backup all-ns-backup
+
+<span style="color:#60a0b0;font-style:italic"># 仅恢复default nginx-example命名空间</span>
+velero restore create --from-backup all-ns-backup --include-namespaces default,nginx-example 
+
+<span style="color:#60a0b0;font-style:italic"># 将test-velero 命名空间资源恢复到test-velero-1下面</span>
+velero restore create restore-for-test --from-backup everyday-1-20210203131802 --namespace-mappings test-velero:test-velero-1
+</code></pre></td></tr></table>
+</div>
+</div><p>查看备份</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">velero  get  backup   <span style="color:#60a0b0;font-style:italic">#备份查看</span>
+velero  get  schedule <span style="color:#60a0b0;font-style:italic">#查看定时备份</span>
+velero  get  restore  <span style="color:#60a0b0;font-style:italic">#查看已有的恢复</span>
+velero  get  plugins  <span style="color:#60a0b0;font-style:italic">#查看插件</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>说明：</p>
+<p>velero restore create RESTORE_NAME &ndash;from-backup BACKUP_NAME &ndash;namespace-mappings old-ns-1:new-ns-1,old-ns-2:new-ns-2</p>
+<p>Velero可以将资源还原到与其备份来源不同的命名空间中。为此，请使用&ndash;namespace-mappings标志</p>
+<h2 id="velero备份实战">velero备份实战</h2>
+<h3 id="velero对集群进行一次完整备份">velero对集群进行一次完整备份：</h3>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">velero backup create  k8s-jf-test-all
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="设置4小时定时备份一次备份保留2个月">设置4小时定时备份一次，备份保留2个月：</h3>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#60a0b0;font-style:italic"># velero create schedule k8s-jf-cron-4h --exclude-namespaces test,tt --schedule=&#34;@every 4h&#34; --ttl 1440h</span>
+Schedule <span style="color:#4070a0">&#34;k8s-jf-cron-4h&#34;</span> created successfully.
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="同集群下手动从完整备份中恢复其中一个namespace到指定namespace">同集群下，手动从完整备份中恢复其中一个namespace到指定namespace</h3>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#60a0b0;font-style:italic"># velero restore create  k8s-jf-test-all-restore --from-backup  k8s-jf-test-all --include-namespaces test --namespace-mappings  test:test10000</span>
+<span style="color:#60a0b0;font-style:italic"># velero restore describe k8s-jf-test-all-restore #查看恢复状态</span>
+Name:         k8s-jf-test-all-restore
+Namespace:    velero
+Labels:       &lt;none&gt;
+Annotations:  &lt;none&gt;
+Phase:                                 InProgress
+Estimated total items to be restored:  <span style="color:#40a070">141</span>
+Items restored so far:                 <span style="color:#40a070">123</span>
+Started:    2021-09-07 10:47:44 +0800 CST
+Completed:  &lt;n/a&gt;
+Backup:  k8s-jf-test-all
+Namespaces:
+  Included:  all namespaces found in the backup
+  Excluded:  &lt;none&gt;
+Resources:
+  Included:        *
+  Excluded:        nodes, events, events.events.k8s.io, backups.velero.io, restores.velero.io, resticrepositories.velero.io
+  Cluster-scoped:  auto
+Namespace mappings:  <span style="color:#bb60d5">test</span><span style="color:#666">=</span>test10000
+Label selector:  &lt;none&gt;
+Restore PVs:  auto
+Preserve Service NodePorts:  auto
+<span style="color:#60a0b0;font-style:italic"># velero restore get</span>
+NAME                      BACKUP            STATUS       STARTED                         COMPLETED   ERRORS   WARNINGS   CREATED                         SELECTOR
+k8s-jf-test-all-restore   k8s-jf-test-all   InProgress   2021-09-07 10:47:44 +0800 CST   &lt;nil&gt;       <span style="color:#40a070">0</span>        <span style="color:#40a070">0</span>          2021-09-07 10:47:44 +0800 CST   &lt;none&gt;
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="跨集群将定期备份数据恢复">跨集群，将定期备份数据恢复</h3>
+<p>对于velero，跨集群需要保持2个集群使用的是同一个云厂商持久卷方案，这里我们统一使用minio，bucket都使用k8s-jf</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5">5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6">6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7">7</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">velero install <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>    --provider aws <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>    --plugins velero/velero-plugin-for-aws:v1.2.0 <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>    --bucket k8s-jf <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>    --secret-file ./credentials-velero <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>    --use-volume-snapshots<span style="color:#666">=</span><span style="color:#007020">false</span> <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>    --backup-location-config <span style="color:#bb60d5">region</span><span style="color:#666">=</span>minio,s3ForcePathStyle<span style="color:#666">=</span><span style="color:#4070a0">&#34;true&#34;</span>,s3Url<span style="color:#666">=</span>http://192.168.1.214:39000
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="查看已经备份数据">查看已经备份数据：</h3>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5">5</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#60a0b0;font-style:italic">#velero backup get</span>
+NAME                                STATUS            ERRORS   WARNINGS   CREATED                         EXPIRES   STORAGE LOCATION   SELECTOR
+k8s-jf-all-cron-4h-20210907061716   Completed         <span style="color:#40a070">0</span>        <span style="color:#40a070">0</span>          2021-09-07 14:17:16 +0800 CST   59d       default            &lt;none&gt;
+k8s-jf-all-cron-4h-20210907021627   Completed         <span style="color:#40a070">0</span>        <span style="color:#40a070">0</span>          2021-09-07 10:16:27 +0800 CST   59d       default            &lt;none&gt;
+k8s-jf-test-all                     Completed         <span style="color:#40a070">0</span>        <span style="color:#40a070">0</span>          2021-09-07 10:19:45 +0800 CST   29d       default            &lt;none&gt;
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="恢复指定命名空间数据">恢复指定命名空间数据</h3>
+<p>这里从k8s-jf-all-cron-4h-20210907061716这个备份恢复argocd命名空间数据到本集群argocd-dev下</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#60a0b0;font-style:italic"># velero restore create  --from-backup  k8s-jf-all-cron-4h-20210907061716 --include-namespaces argocd --namespace-mappings  argocd:argocd-dev</span>
+Restore request <span style="color:#4070a0">&#34;k8s-jf-all-cron-4h-20210907061716-20210907155450&#34;</span> submitted successfully.
+Run <span style="color:#4070a0">`</span>velero restore describe k8s-jf-all-cron-4h-20210907061716-20210907155450<span style="color:#4070a0">`</span> or <span style="color:#4070a0">`</span>velero restore logs k8s-jf-all-cron-4h-20210907061716-20210907155450<span style="color:#4070a0">`</span> <span style="color:#007020;font-weight:bold">for</span> more details.
+<span style="color:#60a0b0;font-style:italic"># velero restore get</span>
+NAME                                               BACKUP                              STATUS       STARTED                         COMPLETED   ERRORS   WARNINGS   CREATED                         SELECTOR
+k8s-jf-all-cron-4h-20210907061716-20210907155450   k8s-jf-all-cron-4h-20210907061716   InProgress   2021-09-07 15:54:51 +0800 CST   &lt;nil&gt;       <span style="color:#40a070">0</span>        <span style="color:#40a070">0</span>          2021-09-07 15:54:51 +0800 CST   &lt;none&gt;
+<span style="color:#60a0b0;font-style:italic"># velero restore logs k8s-jf-all-cron-4h-20210907061716-20210907161119</span>
+<span style="color:#bb60d5">time</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;2021-09-07T08:11:23Z&#34;</span> <span style="color:#bb60d5">level</span><span style="color:#666">=</span>info <span style="color:#bb60d5">msg</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;Attempting to restore Secret: argocd-application-controller-token-wv62v&#34;</span> <span style="color:#bb60d5">logSource</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;pkg/restore/restore.go:1238&#34;</span> <span style="color:#bb60d5">restore</span><span style="color:#666">=</span>velero/k8s-jf-all-cron-4h-20210907061716-20210907161119
+<span style="color:#bb60d5">time</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;2021-09-07T08:11:23Z&#34;</span> <span style="color:#bb60d5">level</span><span style="color:#666">=</span>info <span style="color:#bb60d5">msg</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;Restored 2 items out of an estimated total of 61 (estimate will change throughout the restore)&#34;</span> <span style="color:#bb60d5">logSource</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;pkg/restore/restore.go:664&#34;</span> <span style="color:#bb60d5">name</span><span style="color:#666">=</span>argocd-application-controller-token-wv62v <span style="color:#bb60d5">namespace</span><span style="color:#666">=</span>argocd-dev <span style="color:#bb60d5">progress</span><span style="color:#666">=</span> <span style="color:#bb60d5">resource</span><span style="color:#666">=</span>secrets <span style="color:#bb60d5">restore</span><span style="color:#666">=</span>velero/k8s-jf-all-cron-4h-20210907061716-20210907161119
+<span style="color:#bb60d5">time</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;2021-09-07T08:11:23Z&#34;</span> <span style="color:#bb60d5">level</span><span style="color:#666">=</span>info <span style="color:#bb60d5">msg</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;Attempting to restore Secret: argocd-dex-server-token-9n4rs&#34;</span> <span style="color:#bb60d5">logSource</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;pkg/restore/restore.go:1238&#34;</span> <span style="color:#bb60d5">restore</span><span style="color:#666">=</span>velero/k8s-jf-all-cron-4h-20210907061716-20210907161119
+<span style="color:#bb60d5">time</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;2021-09-07T08:11:23Z&#34;</span> <span style="color:#bb60d5">level</span><span style="color:#666">=</span>info <span style="color:#bb60d5">msg</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;Restored 3 items out of an estimated total of 61 (estimate will change throughout the restore)&#34;</span> <span style="color:#bb60d5">logSource</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;pkg/restore/restore.go:664&#34;</span> <span style="color:#bb60d5">name</span><span style="color:#666">=</span>argocd-dex-server-token-9n4rs <span style="color:#bb60d5">namespace</span><span style="color:#666">=</span>argocd-dev <span style="color:#bb60d5">progress</span><span style="color:#666">=</span> <span style="color:#bb60d5">resource</span><span style="color:#666">=</span>secrets <span style="color:#bb60d5">restore</span><span style="color:#666">=</span>velero/k8s-jf-all-cron-4h-20210907061716-20210907161119
+<span style="color:#bb60d5">time</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;2021-09-07T08:11:23Z&#34;</span> <span style="color:#bb60d5">level</span><span style="color:#666">=</span>info <span style="color:#bb60d5">msg</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;Attempting to restore Secret: argocd-secret&#34;</span> <span style="color:#bb60d5">logSource</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;pkg/restore/restore.go:1238&#34;</span> <span style="color:#bb60d5">restore</span><span style="color:#666">=</span>velero/k8s-jf-all-cron-4h-20210907061716-20210907161119
+<span style="color:#bb60d5">time</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;2021-09-07T08:11:23Z&#34;</span> <span style="color:#bb60d5">level</span><span style="color:#666">=</span>info <span style="color:#bb60d5">msg</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;Restored 4 items out of an estimated total of 61 (estimate will change throughout the restore)&#34;</span> <span style="color:#bb60d5">logSource</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;pkg/restore/restore.go:664&#34;</span> <span style="color:#bb60d5">name</span><span style="color:#666">=</span>argocd-secret <span style="color:#bb60d5">namespace</span><span style="color:#666">=</span>argocd-dev <span style="color:#bb60d5">progress</span><span style="color:#666">=</span> <span style="color:#bb60d5">resource</span><span style="color:#666">=</span>secrets <span style="color:#bb60d5">restore</span><span style="color:#666">=</span>velero/k8s-jf-all-cron-4h-20210907061716-20210907161119
+<span style="color:#bb60d5">time</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;2021-09-07T08:11:23Z&#34;</span> <span style="color:#bb60d5">level</span><span style="color:#666">=</span>info <span style="color:#bb60d5">msg</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;Attempting to restore Secret: argocd-server-token-48vjd&#34;</span> <span style="color:#bb60d5">logSource</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;pkg/restore/restore.go:1238&#34;</span> <span style="color:#bb60d5">restore</span><span style="color:#666">=</span>velero/k8s-jf-all-cron-4h-20210907061716-20210907161119
+<span style="color:#bb60d5">time</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;2021-09-07T08:11:23Z&#34;</span> <span style="color:#bb60d5">level</span><span style="color:#666">=</span>info <span style="color:#bb60d5">msg</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;Restored 5 items out of an estimated total of 61 (estimate will change throughout the restore)&#34;</span> <span style="color:#bb60d5">logSource</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;pkg/restore/restore.go:664&#34;</span> <span style="color:#bb60d5">name</span><span style="color:#666">=</span>argocd-server-token-48vjd <span style="color:#bb60d5">namespace</span><span style="color:#666">=</span>argocd-dev <span style="color:#bb60d5">progress</span><span style="color:#666">=</span> <span style="color:#bb60d5">resource</span><span style="color:#666">=</span>secrets <span style="color:#bb60d5">restore</span><span style="color:#666">=</span>velero/k8s-jf-all-cron-4h-20210907061716-20210907161119
+<span style="color:#bb60d5">time</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;2021-09-07T08:11:23Z&#34;</span> <span style="color:#bb60d5">level</span><span style="color:#666">=</span>info <span style="color:#bb60d5">msg</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;Attempting to restore Secret: cluster-192.168.1.210-3497337724&#34;</span> <span style="color:#bb60d5">logSource</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;pkg/restore/restore.go:1238&#34;</span> <span style="color:#bb60d5">restore</span><span style="color:#666">=</span>velero/k8s-jf-all-cron-4h-20210907061716-20210907161119
+<span style="color:#bb60d5">time</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;2021-09-07T08:11:23Z&#34;</span> <span style="color:#bb60d5">level</span><span style="color:#666">=</span>info <span style="color:#bb60d5">msg</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;Restored 6 items out of an estimated total of 61 (estimate will change throughout the restore)&#34;</span> <span style="color:#bb60d5">logSource</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;pkg/restore/restore.go:664&#34;</span> <span style="color:#bb60d5">name</span><span style="color:#666">=</span>cluster-192.168.1.210-3497337724 <span style="color:#bb60d5">namespace</span><span style="color:#666">=</span>argocd-dev <span style="color:#bb60d5">progress</span><span style="color:#666">=</span> <span style="color:#bb60d5">resource</span><span style="color:#666">=</span>secrets <span style="color:#bb60d5">restore</span><span style="color:#666">=</span>velero/k8s-jf-all-cron-4h-20210907061716-20210907161119
+<span style="color:#bb60d5">time</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;2021-09-07T08:11:23Z&#34;</span> <span style="color:#bb60d5">level</span><span style="color:#666">=</span>info <span style="color:#bb60d5">msg</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;Attempting to restore Secret: cluster-192.168.1.214-1096681010&#34;</span> <span style="color:#bb60d5">logSource</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;pkg/restore/restore.go:1238&#34;</span> <span style="color:#bb60d5">restore</span><span style="color:#666">=</span>velero/k8s-jf-all-cron-4h-20210907061716-20210907161119
+...
+<span style="color:#bb60d5">time</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;2021-09-07T08:11:30Z&#34;</span> <span style="color:#bb60d5">level</span><span style="color:#666">=</span>info <span style="color:#bb60d5">msg</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;Restored 61 items out of an estimated total of 61 (estimate will change throughout the restore)&#34;</span> <span style="color:#bb60d5">logSource</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;pkg/restore/restore.go:664&#34;</span> <span style="color:#bb60d5">name</span><span style="color:#666">=</span>argocd-server <span style="color:#bb60d5">namespace</span><span style="color:#666">=</span>argocd-dev <span style="color:#bb60d5">progress</span><span style="color:#666">=</span> <span style="color:#bb60d5">resource</span><span style="color:#666">=</span>services <span style="color:#bb60d5">restore</span><span style="color:#666">=</span>velero/k8s-jf-all-cron-4h-20210907061716-20210907161119
+<span style="color:#bb60d5">time</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;2021-09-07T08:11:30Z&#34;</span> <span style="color:#bb60d5">level</span><span style="color:#666">=</span>info <span style="color:#bb60d5">msg</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;Waiting for all restic restores to complete&#34;</span> <span style="color:#bb60d5">logSource</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;pkg/restore/restore.go:546&#34;</span> <span style="color:#bb60d5">restore</span><span style="color:#666">=</span>velero/k8s-jf-all-cron-4h-20210907061716-20210907161119
+<span style="color:#bb60d5">time</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;2021-09-07T08:11:30Z&#34;</span> <span style="color:#bb60d5">level</span><span style="color:#666">=</span>info <span style="color:#bb60d5">msg</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;Done waiting for all restic restores to complete&#34;</span> <span style="color:#bb60d5">logSource</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;pkg/restore/restore.go:562&#34;</span> <span style="color:#bb60d5">restore</span><span style="color:#666">=</span>velero/k8s-jf-all-cron-4h-20210907061716-20210907161119
+<span style="color:#bb60d5">time</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;2021-09-07T08:11:30Z&#34;</span> <span style="color:#bb60d5">level</span><span style="color:#666">=</span>info <span style="color:#bb60d5">msg</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;Waiting for all post-restore-exec hooks to complete&#34;</span> <span style="color:#bb60d5">logSource</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;pkg/restore/restore.go:566&#34;</span> <span style="color:#bb60d5">restore</span><span style="color:#666">=</span>velero/k8s-jf-all-cron-4h-20210907061716-20210907161119
+<span style="color:#bb60d5">time</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;2021-09-07T08:11:30Z&#34;</span> <span style="color:#bb60d5">level</span><span style="color:#666">=</span>info <span style="color:#bb60d5">msg</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;Done waiting for all post-restore exec hooks to complete&#34;</span> <span style="color:#bb60d5">logSource</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;pkg/restore/restore.go:574&#34;</span> <span style="color:#bb60d5">restore</span><span style="color:#666">=</span>velero/k8s-jf-all-cron-4h-20210907061716-20210907161119
+<span style="color:#bb60d5">time</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;2021-09-07T08:11:30Z&#34;</span> <span style="color:#bb60d5">level</span><span style="color:#666">=</span>info <span style="color:#bb60d5">msg</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;restore completed&#34;</span> <span style="color:#bb60d5">logSource</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;pkg/controller/restore_controller.go:480&#34;</span> <span style="color:#bb60d5">restore</span><span style="color:#666">=</span>velero/k8s-jf-all-cron-4h-20210907061716-20210907161119
+
+</code></pre></td></tr></table>
+</div>
+</div><p>通过日志可以看到原集群argo下数据已经恢复到现在集群argo-dev下</p>
+<h3 id="卸载velero">卸载velero</h3>
+<p>卸载velero，注意这里的uninstall不会删除namespace：</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5">5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6">6</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#60a0b0;font-style:italic"># velero uninstall</span>
+You are about to uninstall Velero.
+Are you sure you want to <span style="color:#007020;font-weight:bold">continue</span> <span style="color:#666">(</span>Y/N<span style="color:#666">)</span>? y
+Velero uninstalled ⛵
+<span style="color:#60a0b0;font-style:italic"># kubectl delete namespace/velero clusterrolebinding/velero</span>
+<span style="color:#60a0b0;font-style:italic"># kubectl delete crds -l component=velero</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="备份中遇到异常">备份中遇到异常</h3>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5">5</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">time=&#34;2021-09-07T07:22:35Z&#34; level=info msg=&#34;Validating backup storage location&#34; backup-storage-location=default controller=backup-storage-location logSource=&#34;pkg/controller/backup_storage_location_controller.go:114&#34;<span style="color:#bbb">
+</span><span style="color:#bbb"></span>time=&#34;2021-09-07T07:22:36Z&#34; level=info msg=&#34;Backup storage location is invalid, marking as unavailable&#34; backup-storage-location=default controller=backup-storage-location logSource=&#34;pkg/controller/backup_storage_location_controller.go:117&#34;<span style="color:#bbb">
+</span><span style="color:#bbb"></span>time=&#34;2021-09-07T07:22:36Z&#34; level=error msg=&#34;Error listing backups in backup store&#34; backupLocation=default controller=backup-sync error=&#34;rpc error: code = Unknown desc = RequestError: send request failed\ncaused by: Get http://minio.velero.svc:9000/velero?delimiter=%2F&amp;list-type=2&amp;prefix=backups%2F: dial tcp: lookup minio.velero.svc on 10.96.0.10:53: no such host&#34; error.file=&#34;/go/src/velero-plugin-for-aws/velero-plugin-for-aws/object_store.go:361&#34; error.function=&#34;main.(*ObjectStore).ListCommonPrefixes&#34; logSource=&#34;pkg/controller/backup_sync_controller.go:182&#34;<span style="color:#bbb">
+</span><span style="color:#bbb"></span>time=&#34;2021-09-07T07:22:36Z&#34; level=error msg=&#34;Current backup storage locations available/unavailable/unknown: 0/1/0, Backup storage location \&#34;default\&#34; is unavailable: rpc error: code = Unknown desc = RequestError: send request failed\ncaused by: Get http://minio.velero.svc:9000/velero?delimiter=%2F&amp;list-type=2&amp;prefix=: dial tcp: lookup minio.velero.svc on 10.96.0.10:53: no such host)&#34; controller=backup-storage-location logSource=&#34;pkg/controller/backup_storage_location_controller.go:164&#34;<span style="color:#bbb">
+</span><span style="color:#bbb"></span>time=&#34;2021-09-07T07:22:36Z&#34; level=error msg=&#34;Current backup storage locations available/unavailable/unknown: 0/1/0)&#34; controller=backup-storage-location logSource=&#34;pkg/controller/backup_storage_location_controller.go:166&#34;<span style="color:#bbb">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>说明CRD资源BackupStorageLocation信息以及对象存储账户和自己设置的不一致，由于重新安装没有清理干净旧的资源信息</p>
+<p>这里重新安装即可：</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="34"><a style="outline: none; text-decoration:none; color:inherit" href="#34">34</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="35"><a style="outline: none; text-decoration:none; color:inherit" href="#35">35</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="36"><a style="outline: none; text-decoration:none; color:inherit" href="#36">36</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="37"><a style="outline: none; text-decoration:none; color:inherit" href="#37">37</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="38"><a style="outline: none; text-decoration:none; color:inherit" href="#38">38</a>
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="39"><a style="outline: none; text-decoration:none; color:inherit" href="#39">39</a>
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#60a0b0;font-style:italic"># velero uninstall</span>
+You are about to uninstall Velero.
+Are you sure you want to <span style="color:#007020;font-weight:bold">continue</span> <span style="color:#666">(</span>Y/N<span style="color:#666">)</span>? y
+Velero uninstalled ⛵
+<span style="color:#60a0b0;font-style:italic"># kubectl delete namespace/velero clusterrolebinding/velero</span>
+<span style="color:#60a0b0;font-style:italic"># kubectl delete crds -l component=velero</span>
+<span style="color:#60a0b0;font-style:italic"># velero install \</span>
+    --provider aws <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>    --plugins velero/velero-plugin-for-aws:v1.2.0 <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>    --bucket k8s-jf <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>    --secret-file ./credentials-velero <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>    --use-volume-snapshots<span style="color:#666">=</span><span style="color:#007020">false</span> <span style="color:#4070a0;font-weight:bold">\
+</span><span style="color:#4070a0;font-weight:bold"></span>    --backup-location-config <span style="color:#bb60d5">region</span><span style="color:#666">=</span>minio,s3ForcePathStyle<span style="color:#666">=</span><span style="color:#4070a0">&#34;true&#34;</span>,s3Url<span style="color:#666">=</span>http://192.168.1.214:39000
+<span style="color:#60a0b0;font-style:italic"># kubectl -n velero get backupstoragelocation default -o yaml #查看资源信息已经是自己想要的</span>
+apiVersion: velero.io/v1
+kind: BackupStorageLocation
+metadata:
+  creationTimestamp: <span style="color:#4070a0">&#34;2021-09-07T07:47:44Z&#34;</span>
+  generation: <span style="color:#40a070">1</span>
+  labels:
+    component: velero
+  name: default
+  namespace: velero
+  resourceVersion: <span style="color:#4070a0">&#34;1184696&#34;</span>
+  selfLink: /apis/velero.io/v1/namespaces/velero/backupstoragelocations/default
+  uid: 39502e43-272e-461f-a114-a9ec955f0510
+spec:
+  config:
+    region: minio
+    s3ForcePathStyle: <span style="color:#4070a0">&#34;true&#34;</span>
+    s3Url: http://192.168.1.214:39000
+  default: <span style="color:#007020">true</span>
+  objectStorage:
+    bucket: k8s-jf
+  provider: aws
+status:
+  lastSyncedTime: <span style="color:#4070a0">&#34;2021-09-07T07:50:00Z&#34;</span>
+  lastValidationTime: <span style="color:#4070a0">&#34;2021-09-07T07:50:00Z&#34;</span>
+  phase: Available            
+</code></pre></td></tr></table>
+</div>
+</div>
+        </div>
+
+        
+        
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">wanzi</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+      2021-09-11
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+
+        
+        
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+    
+  </div>
+</div>
+
+
+        <footer class="post-footer">
+          <div class="post-tags">
+              <a href="https://wnote.com/tags/velero/">velero</a>
+                <a href="https://wnote.com/tags/k8s/">k8s</a>
+                <a href="https://wnote.com/tags/%E5%A4%87%E4%BB%BD/">备份</a>
+                <a href="https://wnote.com/tags/keepalived/">keepalived</a>
+                
+            </div>
+
+
+          
+          <nav class="post-nav">
+            
+              <a class="prev" href="/post/prometheus-prometheusalert-alertmanager/">
+                
+                <i class="iconfont">
+                  <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+                </i>
+                <span class="prev-text nav-default">利用Prometheusalert打造Prometheus告警消息聚合</span>
+                <span class="prev-text nav-mobile">上一篇</span>
+              </a>
+            
+              <a class="next" href="/post/greenplum-docker-compose-installtion/">
+                <span class="next-text nav-default">如何快速搭建一套Greenplum集群</span>
+                <span class="prev-text nav-mobile">下一篇</span>
+                
+                <i class="iconfont">
+                  <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+                </i>
+              </a>
+          </nav>
+        </footer>
+      </article>
+
+      
+      
+        
+      
+
+
+      
+      
+
+  
+
+  
+  
+    <div class="post">
+  <script
+    src="https://giscus.app/client.js"
+    data-repo="wzgogo/wanzi"
+    data-repo-id="MDEwOlJlcG9zaXRvcnkzNTc1MjI0MTQ="
+    data-category="Announcements"
+    data-category-id="DIC_kwDOFU9b7s4CSycO"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="light"
+    data-lang="zh-CN"
+    
+      data-loading="lazy"
+    
+    crossorigin="anonymous"
+    async
+  ></script>
+</div>
+
+  
+
+  
+  
+
+  
+
+  
+
+    
+
+  
+
+  
+
+
+    </div>
+
+    
+    <nav class="toc" id="toc">
+    <div class="toc-title">文章目录</div>
+    <div class="toc-content custom-scrollbar">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#备份etcd">备份ETCD</a></li>
+    <li><a href="#minio对象存储服务搭建">minio对象存储服务搭建</a></li>
+    <li><a href="#velero备份之安装客户端">velero备份之安装客户端</a></li>
+    <li><a href="#velero备份之k8s部署velero">velero备份之k8s部署velero</a></li>
+    <li><a href="#velero备份之velero命令">velero备份之velero命令</a>
+      <ul>
+        <li><a href="#备份查看删除操作">备份,查看,删除操作</a></li>
+        <li><a href="#定时备份">定时备份：</a></li>
+        <li><a href="#备份恢复">备份恢复：</a></li>
+      </ul>
+    </li>
+    <li><a href="#velero备份实战">velero备份实战</a>
+      <ul>
+        <li><a href="#velero对集群进行一次完整备份">velero对集群进行一次完整备份：</a></li>
+        <li><a href="#设置4小时定时备份一次备份保留2个月">设置4小时定时备份一次，备份保留2个月：</a></li>
+        <li><a href="#同集群下手动从完整备份中恢复其中一个namespace到指定namespace">同集群下，手动从完整备份中恢复其中一个namespace到指定namespace</a></li>
+        <li><a href="#跨集群将定期备份数据恢复">跨集群，将定期备份数据恢复</a></li>
+        <li><a href="#查看已经备份数据">查看已经备份数据：</a></li>
+        <li><a href="#恢复指定命名空间数据">恢复指定命名空间数据</a></li>
+        <li><a href="#卸载velero">卸载velero</a></li>
+        <li><a href="#备份中遇到异常">备份中遇到异常</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+  </nav>
+
+
+  </div>
+
+      </main>
+
+      <footer id="footer" class="footer">
+        <div class="icon-links">
+  
+  
+    <a href="https://github.com/wzgogo" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+  
+    <a href="https://www.zhihu.com/people/bijiq" rel="me noopener" class="iconfont"
+      title="zhihu"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M351.791182 562.469462l192.945407 0c0-45.367257-21.3871-71.939449-21.3871-71.939449L355.897709 490.530013c3.977591-82.182744 7.541767-187.659007 8.816806-226.835262l159.282726 0c0 0-0.86367-67.402109-18.578124-67.402109s-279.979646 0-279.979646 0 16.850783-88.141456 39.318494-127.053698c0 0-83.60514-4.510734-112.121614 106.962104S81.344656 355.077018 76.80834 367.390461c-4.536316 12.313443 24.62791 5.832845 36.941354 0 12.313443-5.832845 68.050885-25.924439 84.252893-103.69571l86.570681 0c1.165546 49.28652 4.596691 200.335724 3.515057 226.835262L109.86113 490.530013c-25.275663 18.147312-33.701566 71.939449-33.701566 71.939449L279.868105 562.469462c-8.497535 56.255235-23.417339 128.763642-44.275389 167.210279-33.05279 60.921511-50.55235 116.65793-169.802314 212.576513 0 0-19.442818 14.257725 40.829917 9.073656 60.273758-5.185093 117.305683-20.739347 156.840094-99.807147 20.553105-41.107233 41.805128-93.250824 58.386782-146.138358l-0.055259 0.185218 167.855986 193.263655c0 0 22.035876-51.847855 5.832845-108.880803L371.045711 650.610918l-42.1244 31.157627-0.045025 0.151449c11.69946-41.020252 20.11206-81.5749 22.726607-116.858498C351.665315 564.212152 351.72876 563.345412 351.791182 562.469462z"></path>
+  <path d="M584.918753 182.033893l0 668.840094 70.318532 0 28.807093 80.512708 121.875768-80.512708 153.600307 0L959.520453 182.033893 584.918753 182.033893zM887.150192 778.934538l-79.837326 0-99.578949 65.782216-23.537066-65.782216-24.855084 0L659.341766 256.673847l227.807403 0L887.149169 778.934538z"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://wnote.com/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+  
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2018 -
+    2023
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        丸子有记
+        
+      </span></span>
+
+  
+  
+
+  
+    <span>
+      <a href="https://www.foreverblog.cn/" target="_blank" > <img src="https://img.foreverblog.cn/logo_en_default.png" alt="" style="width:auto;height:16px;"> </a>|<a href="https://beian.miit.gov.cn" target="_blank">京ICP备2021004162号-1</a>
+    </span>
+  
+</div>
+
+      </footer>
+
+      <div class="button__back-to-top">
+        <a href="#back-to-top">
+          <i class="iconfont">
+            
+            <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+          </i>
+        </a>
+      </div>
+    </div>
+    
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.44aac06f997857a132df295f595d9c55336473784fc93fcb8c57b715abe23b00.js" integrity="sha256-RKrAb5l4V6Ey3ylfWV2cVTNkc3hPyT/LjFe3FaviOwA=" crossorigin="anonymous"></script>
+
+
+
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+  </body>
+</html>
