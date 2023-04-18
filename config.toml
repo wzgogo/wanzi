@@ -160,11 +160,11 @@ defaultContentLanguage = "zh-cn"           # Default language to use
   [params.giscus]         # giscus is a comment system based on GitHub Discussions. see https://giscus.app
     enable = true
     repo = "wzgogo/wanzi"
-    repoId = "MDEwOlJlcG9zaXRvcnkzNTc1MjI0MTQ="
+    repoId = "R_kgDOJYMw-w"
     category = "Announcements"
-    categoryId = "DIC_kwDOFU9b7s4CSycO"
+    categoryId = "DIC_kwDOJYMw-84CV244"
     mapping = "pathname"  # comment value is the default value
-    strict = 0
+    strict = 1
     reactionsEnabled = 1
     emitMetadata = 0
     inputPosition = "top"
