@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>丸子有记</copyright>
-    <lastBuildDate>Fri, 17 Mar 2023 18:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/golang/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 22 May 2023 18:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/golang/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go学习笔记 - 指针详解</title>
+      <link>https://wnote.com/post/golang-note-pointer/</link>
+      <pubDate>Mon, 22 May 2023 18:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/golang-note-pointer/</guid>
+      <description>指针是什么？ 在Go语言中，指针是一个变量，它存储了另一个变量的内存地址。因此，指针变量指向的是另一个变量的内存地址，而不是变量本身。 声明指针</description>
+    </item>
+    
     <item>
       <title>Go学习笔记 - Go基础知识复习</title>
       <link>https://wnote.com/post/golang-note-datatype-struct/</link>

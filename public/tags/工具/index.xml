@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>工具 on 丸子有记</title>
+    <link>https://wnote.com/tags/%E5%B7%A5%E5%85%B7/</link>
+    <description>Recent content in 工具 on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Mon, 04 Dec 2023 16:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/%E5%B7%A5%E5%85%B7/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Linux下操作百度云盘的利器</title>
+      <link>https://wnote.com/post/tools-bypy-baiduyunpan/</link>
+      <pubDate>Mon, 04 Dec 2023 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/tools-bypy-baiduyunpan/</guid>
+      <description>最近在给公司SAAS产品在客户侧进行私有化部署，由于客户现场网络无法上网，只能通过Linux跳板机将数据传输过去，除了k8s离线部署程序、镜</description>
+    </item>
+    
+  </channel>
+</rss>

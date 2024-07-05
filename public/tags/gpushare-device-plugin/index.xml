@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>gpushare-device-plugin on 丸子有记</title>
+    <link>https://wnote.com/tags/gpushare-device-plugin/</link>
+    <description>Recent content in gpushare-device-plugin on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Fri, 30 Jun 2023 18:10:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/gpushare-device-plugin/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>利用阿里云开源方案实现单GPU卡多人使用</title>
+      <link>https://wnote.com/post/kubernetes-aliyun-gpushare-deploy/</link>
+      <pubDate>Fri, 30 Jun 2023 18:10:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-aliyun-gpushare-deploy/</guid>
+      <description>最近新上了一个AI项目，主要是给大学提供AI在线实验，项目也采购了GPU服务器，但是只有一张Nvidia Tesla T4卡，需要支持多个学生同时在线做</description>
+    </item>
+    
+  </channel>
+</rss>

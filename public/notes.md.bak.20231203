@@ -1,0 +1,11 @@
+---
+title: "笔记"
+date: 2022-11-26T15:00:52+08:00
+lastmod: 2023-05-01T15:10:52+08:00
+weight: 50
+comment: true
+mathjax: false
+---
+-   **[Go语言学习手册](https://wnote.com/notes/golang/)** Golang新手学习手册, 涵盖Go常用数据类型、基本语法、函数、封装、继承、多态、并发编程、错误处理等等。
+-   **[DevOps](https://wnote.com/notes/devops/)** 面向运维开发、运维，涵盖Git、Jenkins、Gitlab、Github、Gerrit、Argo、ArgoCD、Kubernetes Operator、ChatBot等
+-   **[Kubernetes](https://wnote.com/notes/kubernetes/)** 面向容器运维，主要讲解k8s部署、k8s基础、k8s常用控制器和资源清单、配置管理、RBAC、监控告警、Istio、Containerd等

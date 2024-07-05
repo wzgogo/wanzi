@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>sitemap on 丸子有记</title>
+    <link>https://wnote.com/tags/sitemap/</link>
+    <description>Recent content in sitemap on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Sun, 10 Mar 2024 10:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/sitemap/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Python脚本生成一个sitemap网站地图</title>
+      <link>https://wnote.com/post/python-generate-sitemap/</link>
+      <pubDate>Sun, 10 Mar 2024 10:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/python-generate-sitemap/</guid>
+      <description>最近在帮朋友研究一个CMS站群，发现CMS没有sitemap功能，服务器上已经安装了python3，所以只能临时用脚本生成一个，这里记录一下</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -188,6 +188,29 @@ Txt记录值:9ihDbjxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 acme.sh --issue --dns -d example.com -d www.example.com -d cp.example.com
 ```
 
+## 后期更新CA证书
+目前acme.sh支持四个正式环境CA, 分别是Let's Encrypt、Buypass、ZeroSSL和SSL.com，默认使用 ZeroSSL, 
+
+如果需要更换可以使用如下命令:
+
+```
+acme.sh --set-default-ca --server letsencrypt
+
+acme.sh --set-default-ca --server buypass
+
+acme.sh --set-default-ca --server zerossl
+
+acme.sh --set-default-ca --server ssl.com
+
+acme.sh --set-default-ca --server google
+```
+
+注意：国内网站不建议使用google CA，因为很多域名无法访问，申请校验过不去
+
+Google Public CA白嫖地址可以参考：https://cloud.google.com/certificate-manager/docs/public-ca-tutorial
+
+
+
 ## 更新Docker和nginx配置
 申请完证书，我们需要更新下docker-compose和nginx配置，
 ```yaml

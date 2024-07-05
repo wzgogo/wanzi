@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>丸子有记</copyright>
-    <lastBuildDate>Sat, 10 Nov 2018 10:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/brew/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 10 Jul 2023 16:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/brew/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>推荐一个Windows包管理神器</title>
+      <link>https://wnote.com/post/tools-scoop-windows-brew/</link>
+      <pubDate>Mon, 10 Jul 2023 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/tools-scoop-windows-brew/</guid>
+      <description>由于一直用Mac来办公，习惯了Mac下brew安装软件包的便利，最近公司电脑安装了windows系统，想着也折腾一番，如何才能像MAC下安装</description>
+    </item>
+    
     <item>
       <title>Mac系统配置炫酷终端(oh my zsh)</title>
       <link>https://wnote.com/post/tools-zsh-cool-install/</link>

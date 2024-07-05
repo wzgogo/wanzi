@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>python on 丸子有记</title>
+    <link>https://wnote.com/tags/python/</link>
+    <description>Recent content in python on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Sun, 10 Mar 2024 10:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Python脚本生成一个sitemap网站地图</title>
+      <link>https://wnote.com/post/python-generate-sitemap/</link>
+      <pubDate>Sun, 10 Mar 2024 10:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/python-generate-sitemap/</guid>
+      <description>最近在帮朋友研究一个CMS站群，发现CMS没有sitemap功能，服务器上已经安装了python3，所以只能临时用脚本生成一个，这里记录一下</description>
+    </item>
+    
+    <item>
+      <title>Linux下操作百度云盘的利器</title>
+      <link>https://wnote.com/post/tools-bypy-baiduyunpan/</link>
+      <pubDate>Mon, 04 Dec 2023 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/tools-bypy-baiduyunpan/</guid>
+      <description>最近在给公司SAAS产品在客户侧进行私有化部署，由于客户现场网络无法上网，只能通过Linux跳板机将数据传输过去，除了k8s离线部署程序、镜</description>
+    </item>
+    
+  </channel>
+</rss>

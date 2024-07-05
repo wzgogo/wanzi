@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>大模型 on 丸子有记</title>
+    <link>https://wnote.com/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/</link>
+    <description>Recent content in 大模型 on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Tue, 30 Apr 2024 18:10:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>利用ollama和open-webui玩转开源大模型</title>
+      <link>https://wnote.com/post/ai-ollama-open-webui/</link>
+      <pubDate>Tue, 30 Apr 2024 18:10:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/ai-ollama-open-webui/</guid>
+      <description>对于大模型的使用也1年多了，从最开始的chatgbt3.5/4到现在的国产大模型，开源大模型也越来越强，比如Llama,SD等,今天介绍两个</description>
+    </item>
+    
+  </channel>
+</rss>

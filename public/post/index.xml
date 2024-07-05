@@ -7,7 +7,70 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>丸子有记</copyright>
-    <lastBuildDate>Thu, 13 Apr 2023 18:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 16 Jun 2024 16:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>开源Waf安全防护解决方案</title>
+      <link>https://wnote.com/post/tools-safeline-waf/</link>
+      <pubDate>Sun, 16 Jun 2024 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/tools-safeline-waf/</guid>
+      <description>最近网站加了CDN后，凌晨总是莫名其妙来一堆垃圾请求，有些是扫描、有些是大模型的UserAgent、有些是黑蜘蛛。 为了节省CDN费用，同时防</description>
+    </item>
+    
+    <item>
+      <title>利用ollama和open-webui玩转开源大模型</title>
+      <link>https://wnote.com/post/ai-ollama-open-webui/</link>
+      <pubDate>Tue, 30 Apr 2024 18:10:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/ai-ollama-open-webui/</guid>
+      <description>对于大模型的使用也1年多了，从最开始的chatgbt3.5/4到现在的国产大模型，开源大模型也越来越强，比如Llama,SD等,今天介绍两个</description>
+    </item>
+    
+    <item>
+      <title>Python脚本生成一个sitemap网站地图</title>
+      <link>https://wnote.com/post/python-generate-sitemap/</link>
+      <pubDate>Sun, 10 Mar 2024 10:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/python-generate-sitemap/</guid>
+      <description>最近在帮朋友研究一个CMS站群，发现CMS没有sitemap功能，服务器上已经安装了python3，所以只能临时用脚本生成一个，这里记录一下</description>
+    </item>
+    
+    <item>
+      <title>Linux下操作百度云盘的利器</title>
+      <link>https://wnote.com/post/tools-bypy-baiduyunpan/</link>
+      <pubDate>Mon, 04 Dec 2023 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/tools-bypy-baiduyunpan/</guid>
+      <description>最近在给公司SAAS产品在客户侧进行私有化部署，由于客户现场网络无法上网，只能通过Linux跳板机将数据传输过去，除了k8s离线部署程序、镜</description>
+    </item>
+    
+    <item>
+      <title>推荐一个Windows包管理神器</title>
+      <link>https://wnote.com/post/tools-scoop-windows-brew/</link>
+      <pubDate>Mon, 10 Jul 2023 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/tools-scoop-windows-brew/</guid>
+      <description>由于一直用Mac来办公，习惯了Mac下brew安装软件包的便利，最近公司电脑安装了windows系统，想着也折腾一番，如何才能像MAC下安装</description>
+    </item>
+    
+    <item>
+      <title>利用阿里云开源方案实现单GPU卡多人使用</title>
+      <link>https://wnote.com/post/kubernetes-aliyun-gpushare-deploy/</link>
+      <pubDate>Fri, 30 Jun 2023 18:10:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/kubernetes-aliyun-gpushare-deploy/</guid>
+      <description>最近新上了一个AI项目，主要是给大学提供AI在线实验，项目也采购了GPU服务器，但是只有一张Nvidia Tesla T4卡，需要支持多个学生同时在线做</description>
+    </item>
+    
+    <item>
+      <title>Go学习笔记 - 指针详解</title>
+      <link>https://wnote.com/post/golang-note-pointer/</link>
+      <pubDate>Mon, 22 May 2023 18:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/golang-note-pointer/</guid>
+      <description>指针是什么？ 在Go语言中，指针是一个变量，它存储了另一个变量的内存地址。因此，指针变量指向的是另一个变量的内存地址，而不是变量本身。 声明指针</description>
+    </item>
+    
     <item>
       <title>kind构建轻量级kubernetes集群</title>
       <link>https://wnote.com/post/kubernetes-kind-build-clusters/</link>
@@ -123,69 +186,6 @@
       
       <guid>https://wnote.com/post/kubernetes-velero-etcd-backup/</guid>
       <description>对于备份，每家互联网公司技术人员都要去做的一件事儿，当然我们也不例外，今天我主要针对生产环境kubernetes集群制定一些自己的策略，这里</description>
-    </item>
-    
-    <item>
-      <title>如何快速搭建一套Greenplum集群</title>
-      <link>https://wnote.com/post/greenplum-docker-compose-installtion/</link>
-      <pubDate>Wed, 08 Sep 2021 17:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/post/greenplum-docker-compose-installtion/</guid>
-      <description>最近内部项目支持大数据项目，需要模拟客户场景配置Greenplum(老版本4.2.2.4)，因此这里记录下greenplum集群搭建过程,其</description>
-    </item>
-    
-    <item>
-      <title>阿里云共享GPU方案测试</title>
-      <link>https://wnote.com/post/kubernetes-gpushare-aliyun/</link>
-      <pubDate>Tue, 31 Aug 2021 14:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/post/kubernetes-gpushare-aliyun/</guid>
-      <description>一、k8s部署GPU共享插件 部署之前需要确保k8s节点上已安装nvidia-driver和nvidia-docker，同时已将docker默</description>
-    </item>
-    
-    <item>
-      <title>kubeadm部署高可用kubernetes集群</title>
-      <link>https://wnote.com/post/kubernetes-kubeadm-haproxy-keepalived-deploy/</link>
-      <pubDate>Sun, 15 Aug 2021 17:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/post/kubernetes-kubeadm-haproxy-keepalived-deploy/</guid>
-      <description>为了后便后期验证私有化部署 ，最近内网环境需要快速搭建一套k8s集群，由于之前对于规模比较大的集群，我一般采用kubeasz和kubespra</description>
-    </item>
-    
-    <item>
-      <title>阿里云PrivateZone&#43;Bind9&#43;Dnsmasq实现内部DNS</title>
-      <link>https://wnote.com/post/linux-dns-privatezone-bind9-dnsmasq/</link>
-      <pubDate>Sat, 10 Jul 2021 17:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/post/linux-dns-privatezone-bind9-dnsmasq/</guid>
-      <description>需求： 阿里云集群能够解析内部域名 办公网解析内部域名+办公网上网解析 解决方法： 对于第一个问题，直接使用阿里云PrivateZone解析即可 对于</description>
-    </item>
-    
-    <item>
-      <title>Argo Events入门实践</title>
-      <link>https://wnote.com/post/cicd-argo-events-automate-task/</link>
-      <pubDate>Wed, 07 Jul 2021 16:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/post/cicd-argo-events-automate-task/</guid>
-      <description>前面我们介绍了Argo Workflow如何安装与触发任务，这一篇主要介绍一个新工具： ArgoEvents是什么？ Argo Events是一个事件驱动</description>
-    </item>
-    
-    <item>
-      <title>Argo Worflow实践一安装部署</title>
-      <link>https://wnote.com/post/cicd-argo-workflow-install-in-k8s/</link>
-      <pubDate>Fri, 07 May 2021 16:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/post/cicd-argo-workflow-install-in-k8s/</guid>
-      <description>简介&amp;amp;架构 Argo Workflows是一个开源容器级别工作流引擎，用于在Kubernetes上协调并行作业。 Argo Workflows通过抽象K</description>
-    </item>
-    
-    <item>
-      <title>Gitlab runner配置ceph s3</title>
-      <link>https://wnote.com/post/cicd-gitlab-runner-ceph-s3/</link>
-      <pubDate>Fri, 26 Mar 2021 17:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/post/cicd-gitlab-runner-ceph-s3/</guid>
-      <description>对于前端项目Npm构建的时候，经常拉取前端库耗时比较长，另外不同的job之间复用也是一个问题，无论是artifacts或者cache最终我们</description>
     </item>
     
   </channel>

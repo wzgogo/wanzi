@@ -7,7 +7,34 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>丸子有记</copyright>
-    <lastBuildDate>Wed, 15 Mar 2023 16:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/categories/tools/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 16 Jun 2024 16:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/categories/tools/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>开源Waf安全防护解决方案</title>
+      <link>https://wnote.com/post/tools-safeline-waf/</link>
+      <pubDate>Sun, 16 Jun 2024 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/tools-safeline-waf/</guid>
+      <description>最近网站加了CDN后，凌晨总是莫名其妙来一堆垃圾请求，有些是扫描、有些是大模型的UserAgent、有些是黑蜘蛛。 为了节省CDN费用，同时防</description>
+    </item>
+    
+    <item>
+      <title>Linux下操作百度云盘的利器</title>
+      <link>https://wnote.com/post/tools-bypy-baiduyunpan/</link>
+      <pubDate>Mon, 04 Dec 2023 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/tools-bypy-baiduyunpan/</guid>
+      <description>最近在给公司SAAS产品在客户侧进行私有化部署，由于客户现场网络无法上网，只能通过Linux跳板机将数据传输过去，除了k8s离线部署程序、镜</description>
+    </item>
+    
+    <item>
+      <title>推荐一个Windows包管理神器</title>
+      <link>https://wnote.com/post/tools-scoop-windows-brew/</link>
+      <pubDate>Mon, 10 Jul 2023 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/tools-scoop-windows-brew/</guid>
+      <description>由于一直用Mac来办公，习惯了Mac下brew安装软件包的便利，最近公司电脑安装了windows系统，想着也折腾一番，如何才能像MAC下安装</description>
+    </item>
+    
     <item>
       <title>Delve版本过低无法适配Goland</title>
       <link>https://wnote.com/post/tools-goland-delve-err/</link>

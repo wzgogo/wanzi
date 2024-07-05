@@ -7,13 +7,49 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>丸子有记</copyright>
-    <lastBuildDate>Thu, 13 Apr 2023 18:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 16 Jun 2024 16:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>tools</title>
+      <link>https://wnote.com/categories/tools/</link>
+      <pubDate>Sun, 16 Jun 2024 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/categories/tools/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ai</title>
+      <link>https://wnote.com/categories/ai/</link>
+      <pubDate>Tue, 30 Apr 2024 18:10:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/categories/ai/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>python</title>
+      <link>https://wnote.com/categories/python/</link>
+      <pubDate>Sun, 10 Mar 2024 10:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/categories/python/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>kubernetes</title>
       <link>https://wnote.com/categories/kubernetes/</link>
-      <pubDate>Thu, 13 Apr 2023 18:22:42 +0800</pubDate>
+      <pubDate>Fri, 30 Jun 2023 18:10:42 +0800</pubDate>
       
       <guid>https://wnote.com/categories/kubernetes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>golang</title>
+      <link>https://wnote.com/categories/golang/</link>
+      <pubDate>Mon, 22 May 2023 18:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/categories/golang/</guid>
       <description></description>
     </item>
     
@@ -23,24 +59,6 @@
       <pubDate>Wed, 22 Mar 2023 18:22:42 +0800</pubDate>
       
       <guid>https://wnote.com/categories/cicd/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>golang</title>
-      <link>https://wnote.com/categories/golang/</link>
-      <pubDate>Fri, 17 Mar 2023 18:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/categories/golang/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>tools</title>
-      <link>https://wnote.com/categories/tools/</link>
-      <pubDate>Wed, 15 Mar 2023 16:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/categories/tools/</guid>
       <description></description>
     </item>
     
@@ -68,15 +86,6 @@
       <pubDate>Fri, 26 Feb 2021 17:22:42 +0800</pubDate>
       
       <guid>https://wnote.com/categories/devops/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>python</title>
-      <link>https://wnote.com/categories/python/</link>
-      <pubDate>Sat, 20 Jan 2018 10:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/categories/python/</guid>
       <description></description>
     </item>
     

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>雷池 on 丸子有记</title>
+    <link>https://wnote.com/tags/%E9%9B%B7%E6%B1%A0/</link>
+    <description>Recent content in 雷池 on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Sun, 16 Jun 2024 16:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/%E9%9B%B7%E6%B1%A0/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>开源Waf安全防护解决方案</title>
+      <link>https://wnote.com/post/tools-safeline-waf/</link>
+      <pubDate>Sun, 16 Jun 2024 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/tools-safeline-waf/</guid>
+      <description>最近网站加了CDN后，凌晨总是莫名其妙来一堆垃圾请求，有些是扫描、有些是大模型的UserAgent、有些是黑蜘蛛。 为了节省CDN费用，同时防</description>
+    </item>
+    
+  </channel>
+</rss>

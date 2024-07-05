@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>指针 on 丸子有记</title>
+    <link>https://wnote.com/tags/%E6%8C%87%E9%92%88/</link>
+    <description>Recent content in 指针 on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Mon, 22 May 2023 18:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/%E6%8C%87%E9%92%88/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go学习笔记 - 指针详解</title>
+      <link>https://wnote.com/post/golang-note-pointer/</link>
+      <pubDate>Mon, 22 May 2023 18:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/golang-note-pointer/</guid>
+      <description>指针是什么？ 在Go语言中，指针是一个变量，它存储了另一个变量的内存地址。因此，指针变量指向的是另一个变量的内存地址，而不是变量本身。 声明指针</description>
+    </item>
+    
+  </channel>
+</rss>

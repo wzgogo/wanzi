@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>windows on 丸子有记</title>
+    <link>https://wnote.com/tags/windows/</link>
+    <description>Recent content in windows on 丸子有记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>丸子有记</copyright>
+    <lastBuildDate>Mon, 10 Jul 2023 16:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/windows/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>推荐一个Windows包管理神器</title>
+      <link>https://wnote.com/post/tools-scoop-windows-brew/</link>
+      <pubDate>Mon, 10 Jul 2023 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/post/tools-scoop-windows-brew/</guid>
+      <description>由于一直用Mac来办公，习惯了Mac下brew安装软件包的便利，最近公司电脑安装了windows系统，想着也折腾一番，如何才能像MAC下安装</description>
+    </item>
+    
+  </channel>
+</rss>

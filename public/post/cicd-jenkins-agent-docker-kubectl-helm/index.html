@@ -62,14 +62,6 @@
 
 
 
-<style>
-  .wallpaper {
-    background-image: url('/static/img/wallpaper.jpg');
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: cover;
-  }
-</style>
 
 
 
@@ -421,6 +413,10 @@
 
     
     
+      <span id="busuanzi_container_page_pv">
+        | 阅读 <span id="busuanzi_value_page_pv"></span>
+      </span>
+    
 
 
     
@@ -648,18 +644,6 @@ jenkins/inbound-agent 镜像：原名称为 jenkins/jnlp-slave ，从 4.3-2 开�
 </svg>
 
     </a>
-  
-    <a href="https://www.zhihu.com/people/bijiq" rel="me noopener" class="iconfont"
-      title="zhihu"  target="_blank"
-      >
-      <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
-  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-  width="36" height="36">
-  <path d="M351.791182 562.469462l192.945407 0c0-45.367257-21.3871-71.939449-21.3871-71.939449L355.897709 490.530013c3.977591-82.182744 7.541767-187.659007 8.816806-226.835262l159.282726 0c0 0-0.86367-67.402109-18.578124-67.402109s-279.979646 0-279.979646 0 16.850783-88.141456 39.318494-127.053698c0 0-83.60514-4.510734-112.121614 106.962104S81.344656 355.077018 76.80834 367.390461c-4.536316 12.313443 24.62791 5.832845 36.941354 0 12.313443-5.832845 68.050885-25.924439 84.252893-103.69571l86.570681 0c1.165546 49.28652 4.596691 200.335724 3.515057 226.835262L109.86113 490.530013c-25.275663 18.147312-33.701566 71.939449-33.701566 71.939449L279.868105 562.469462c-8.497535 56.255235-23.417339 128.763642-44.275389 167.210279-33.05279 60.921511-50.55235 116.65793-169.802314 212.576513 0 0-19.442818 14.257725 40.829917 9.073656 60.273758-5.185093 117.305683-20.739347 156.840094-99.807147 20.553105-41.107233 41.805128-93.250824 58.386782-146.138358l-0.055259 0.185218 167.855986 193.263655c0 0 22.035876-51.847855 5.832845-108.880803L371.045711 650.610918l-42.1244 31.157627-0.045025 0.151449c11.69946-41.020252 20.11206-81.5749 22.726607-116.858498C351.665315 564.212152 351.72876 563.345412 351.791182 562.469462z"></path>
-  <path d="M584.918753 182.033893l0 668.840094 70.318532 0 28.807093 80.512708 121.875768-80.512708 153.600307 0L959.520453 182.033893 584.918753 182.033893zM887.150192 778.934538l-79.837326 0-99.578949 65.782216-23.537066-65.782216-24.855084 0L659.341766 256.673847l227.807403 0L887.149169 778.934538z"></path>
-</svg>
-
-    </a>
 
 
 <a href="https://wnote.com/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
@@ -687,7 +671,7 @@ jenkins/inbound-agent 镜像：原名称为 jenkins/jnlp-slave ，从 4.3-2 开�
     &copy;
     
       2018 -
-    2023
+    2024
     <span class="heart">
       
       <i class="iconfont">
@@ -705,6 +689,10 @@ jenkins/inbound-agent 镜像：原名称为 jenkins/jnlp-slave ，从 4.3-2 开�
       </span></span>
 
   
+  
+    <span id="busuanzi_container">
+      访客数/访问量：<span id="busuanzi_value_site_uv"></span>/<span id="busuanzi_value_site_pv"></span>
+    </span>
   
 
   
@@ -751,7 +739,16 @@ jenkins/inbound-agent 镜像：原名称为 jenkins/jnlp-slave ，从 4.3-2 开�
 
 
 
-
+<script id="baidu_analytics">
+  var _hmt = _hmt || [];
+  (function() {
+    if (window.location.hostname === 'localhost') return;
+    var hm = document.createElement("script"); hm.async = true;
+    hm.src = "https://hm.baidu.com/hm.js?\u003cscript\u003e var _hmt = _hmt || [];(function() { var hm = document.createElement(\u0022script\u0022); hm.src = \u0022https:\/\/hm.baidu.com\/hm.js?9f80634ead11eb9ce00a6452d8891ed7\u0022; var s = document.getElementsByTagName(\u0022script\u0022)[0]; s.parentNode.insertBefore(hm, s);})();\u003c\/script\u003e";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+</script>
 
 
 
@@ -764,6 +761,8 @@ jenkins/inbound-agent 镜像：原名称为 jenkins/jnlp-slave ，从 4.3-2 开�
 
 
 
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
 

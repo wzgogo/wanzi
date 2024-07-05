@@ -7,184 +7,184 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>丸子有记</copyright>
-    <lastBuildDate>Thu, 13 Apr 2023 18:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>docker</title>
-      <link>https://wnote.com/tags/docker/</link>
-      <pubDate>Thu, 13 Apr 2023 18:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/tags/docker/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>k8s</title>
-      <link>https://wnote.com/tags/k8s/</link>
-      <pubDate>Thu, 13 Apr 2023 18:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/tags/k8s/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>kind</title>
-      <link>https://wnote.com/tags/kind/</link>
-      <pubDate>Thu, 13 Apr 2023 18:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/tags/kind/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>helm</title>
-      <link>https://wnote.com/tags/helm/</link>
-      <pubDate>Wed, 22 Mar 2023 18:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/tags/helm/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>jenkins</title>
-      <link>https://wnote.com/tags/jenkins/</link>
-      <pubDate>Wed, 22 Mar 2023 18:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/tags/jenkins/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>kubectl</title>
-      <link>https://wnote.com/tags/kubectl/</link>
-      <pubDate>Wed, 22 Mar 2023 18:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/tags/kubectl/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>maven</title>
-      <link>https://wnote.com/tags/maven/</link>
-      <pubDate>Wed, 22 Mar 2023 16:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/tags/maven/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>golang</title>
-      <link>https://wnote.com/tags/golang/</link>
-      <pubDate>Fri, 17 Mar 2023 18:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/tags/golang/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>go笔记</title>
-      <link>https://wnote.com/tags/go%E7%AC%94%E8%AE%B0/</link>
-      <pubDate>Fri, 17 Mar 2023 18:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/tags/go%E7%AC%94%E8%AE%B0/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>delve</title>
-      <link>https://wnote.com/tags/delve/</link>
-      <pubDate>Wed, 15 Mar 2023 16:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/tags/delve/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>go</title>
-      <link>https://wnote.com/tags/go/</link>
-      <pubDate>Wed, 15 Mar 2023 16:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/tags/go/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>goland</title>
-      <link>https://wnote.com/tags/goland/</link>
-      <pubDate>Wed, 15 Mar 2023 16:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/tags/goland/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>acme</title>
-      <link>https://wnote.com/tags/acme/</link>
-      <pubDate>Sat, 12 Nov 2022 16:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/tags/acme/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>SSL证书</title>
-      <link>https://wnote.com/tags/ssl%E8%AF%81%E4%B9%A6/</link>
-      <pubDate>Sat, 12 Nov 2022 16:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/tags/ssl%E8%AF%81%E4%B9%A6/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>阿里云</title>
-      <link>https://wnote.com/tags/%E9%98%BF%E9%87%8C%E4%BA%91/</link>
-      <pubDate>Sat, 12 Nov 2022 16:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/tags/%E9%98%BF%E9%87%8C%E4%BA%91/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>gitbook</title>
-      <link>https://wnote.com/tags/gitbook/</link>
-      <pubDate>Thu, 06 Oct 2022 17:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/tags/gitbook/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>markdown</title>
-      <link>https://wnote.com/tags/markdown/</link>
-      <pubDate>Thu, 06 Oct 2022 17:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/tags/markdown/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>mdbook</title>
-      <link>https://wnote.com/tags/mdbook/</link>
-      <pubDate>Thu, 06 Oct 2022 17:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/tags/mdbook/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>rust</title>
-      <link>https://wnote.com/tags/rust/</link>
-      <pubDate>Thu, 06 Oct 2022 17:22:42 +0800</pubDate>
-      
-      <guid>https://wnote.com/tags/rust/</guid>
-      <description></description>
-    </item>
-    
+    <lastBuildDate>Sun, 16 Jun 2024 16:22:42 +0800</lastBuildDate><atom:link href="https://wnote.com/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>CDN</title>
       <link>https://wnote.com/tags/cdn/</link>
-      <pubDate>Wed, 07 Sep 2022 12:22:42 +0800</pubDate>
+      <pubDate>Sun, 16 Jun 2024 16:22:42 +0800</pubDate>
       
       <guid>https://wnote.com/tags/cdn/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>safeline</title>
+      <link>https://wnote.com/tags/safeline/</link>
+      <pubDate>Sun, 16 Jun 2024 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/tags/safeline/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>waf</title>
+      <link>https://wnote.com/tags/waf/</link>
+      <pubDate>Sun, 16 Jun 2024 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/tags/waf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>雷池</title>
+      <link>https://wnote.com/tags/%E9%9B%B7%E6%B1%A0/</link>
+      <pubDate>Sun, 16 Jun 2024 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/tags/%E9%9B%B7%E6%B1%A0/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>llama</title>
+      <link>https://wnote.com/tags/llama/</link>
+      <pubDate>Tue, 30 Apr 2024 18:10:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/tags/llama/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>llama3</title>
+      <link>https://wnote.com/tags/llama3/</link>
+      <pubDate>Tue, 30 Apr 2024 18:10:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/tags/llama3/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ollama</title>
+      <link>https://wnote.com/tags/ollama/</link>
+      <pubDate>Tue, 30 Apr 2024 18:10:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/tags/ollama/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>open-webui</title>
+      <link>https://wnote.com/tags/open-webui/</link>
+      <pubDate>Tue, 30 Apr 2024 18:10:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/tags/open-webui/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>大模型</title>
+      <link>https://wnote.com/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/</link>
+      <pubDate>Tue, 30 Apr 2024 18:10:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>开源</title>
+      <link>https://wnote.com/tags/%E5%BC%80%E6%BA%90/</link>
+      <pubDate>Tue, 30 Apr 2024 18:10:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/tags/%E5%BC%80%E6%BA%90/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>python</title>
+      <link>https://wnote.com/tags/python/</link>
+      <pubDate>Sun, 10 Mar 2024 10:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/tags/python/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sitemap</title>
+      <link>https://wnote.com/tags/sitemap/</link>
+      <pubDate>Sun, 10 Mar 2024 10:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/tags/sitemap/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>bypy</title>
+      <link>https://wnote.com/tags/bypy/</link>
+      <pubDate>Mon, 04 Dec 2023 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/tags/bypy/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>工具</title>
+      <link>https://wnote.com/tags/%E5%B7%A5%E5%85%B7/</link>
+      <pubDate>Mon, 04 Dec 2023 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/tags/%E5%B7%A5%E5%85%B7/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>brew</title>
+      <link>https://wnote.com/tags/brew/</link>
+      <pubDate>Mon, 10 Jul 2023 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/tags/brew/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>scoop</title>
+      <link>https://wnote.com/tags/scoop/</link>
+      <pubDate>Mon, 10 Jul 2023 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/tags/scoop/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>windows</title>
+      <link>https://wnote.com/tags/windows/</link>
+      <pubDate>Mon, 10 Jul 2023 16:22:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/tags/windows/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>aliyun</title>
+      <link>https://wnote.com/tags/aliyun/</link>
+      <pubDate>Fri, 30 Jun 2023 18:10:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/tags/aliyun/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gpu</title>
+      <link>https://wnote.com/tags/gpu/</link>
+      <pubDate>Fri, 30 Jun 2023 18:10:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/tags/gpu/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gpushare-device-plugin</title>
+      <link>https://wnote.com/tags/gpushare-device-plugin/</link>
+      <pubDate>Fri, 30 Jun 2023 18:10:42 +0800</pubDate>
+      
+      <guid>https://wnote.com/tags/gpushare-device-plugin/</guid>
       <description></description>
     </item>
     
